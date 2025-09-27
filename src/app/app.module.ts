@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'; 
 import { HomeComponent } from './pages/home/home.component';
 import { EventComponent } from './pages/event/event.component';
+import { ProjectComponent } from './pages/project/project.component';
 // NOTE: HttpClientModule removed and replaced with provideHttpClient in providers
 import { provideHttpClient } from '@angular/common/http'; // <-- NEW: Import the functional provider
 
@@ -13,7 +14,8 @@ import { provideHttpClient } from '@angular/common/http'; // <-- NEW: Import the
   declarations: [
     AppComponent,
     HomeComponent,
-    EventComponent
+    EventComponent,
+    ProjectComponent
   ],
   imports: [
     BrowserModule,

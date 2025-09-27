@@ -1,1 +1,207 @@
-<p>project works!</p>
+<div class="main-content">
+  <div class="container">
+    <div class="page-header">
+      <h1>Our Projects</h1>
+      <p>Explore our active, completed, and upcoming projects</p>
+    </div>
+    <nav class="navbar">
+            <div class="nav-container">
+                <a href="index.html" class="logo">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8IS0tIEdyZWVuIGNvbXB1dGVyL3BpeGVsIGljb24gLS0+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8IS0tIEJsYWNrIGxpbmVzIC0tPg0KPHJlY3QgeD0iNTQiIHk9IjE1IiB3aWR0aD0iNCIgaGVpZ2h0PSI4IiBmaWxsPSIjMDAwIi8+DQo8cmVjdCB4PSI1NCIgeT0iMzciIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjwhLS0gVGV4dCAtLT4NCjx0ZXh0IHg9IjcwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzMzMyI+bGltdGljPC90ZXh0Pg0KPC9nPg0KPC9zdmc+" 
+                    alt="LIMTIC">
+                </a>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="#" class="nav-link">About Us</a></li>
+                    <li><a href="events.html" class="nav-link active">Events</a></li>
+                    <li><a href="projects.html" class="nav-link">Projects</a></li>
+                    <li><a href="files.html" class="nav-link">Files</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="profile.html" class="btn-signin">Profile</a>
+                </div>
+            </div>
+        </nav>
+
+    <div class="filter-section">
+      <div class="search-filters">
+        <div class="filter-group">
+          <label for="search">Search Projects</label>
+          <input
+            type="text"
+            id="search"
+            [(ngModel)]="searchTerm"
+            (keyup)="applyFilters()"
+            placeholder="Search by project name, status, or description..."
+          />
+        </div>
+        <div class="filter-group">
+          <label for="projectStatus">Status</label>
+          <select
+            id="projectStatus"
+            [(ngModel)]="selectedProjectStatus"
+            (change)="applyFilters()"
+          >
+            <option value="">All Status</option>
+            <option value="ACTIVE">Active</option>
+            <option value="COMPLETED">Completed</option>
+            <option value="NOT_STARTED">Not Started</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>&nbsp;</label>
+          <div class="add-event-container">
+            <button class="btn-add" (click)="openModal()">+ Add Project</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="events-container" id="projectsContainer">
+      <div *ngIf="loading" class="loading-state">Loading projects...</div>
+      <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
+
+      <div class="event-card" *ngFor="let project of filteredProjects">
+        <div
+          class="event-status"
+          [ngClass]="{
+            'status-upcoming': project.status === 'NOT_STARTED',
+            'status-ongoing': project.status === 'ACTIVE',
+            'status-completed': project.status === 'COMPLETED'
+          }"
+        >
+          {{ project.status | titlecase }}
+        </div>
+
+        <img src="/project.jpg" />
+
+        <div class="event-date">📅 {{ project.startDate | date: 'mediumDate' }}</div>
+
+        <div class="event-content">
+          <div class="event-title">{{ project.projectName }}</div>
+          <div class="event-description">{{ project.description }}</div>
+
+          <div class="event-meta">
+            <div class="event-meta-item">
+              <span>💰</span>
+              <span>Budget: ${{ project.budget }}</span>
+            </div>
+            <div class="event-meta-item">
+              <span>👥</span>
+              <span>{{ project.teamMembers?.length || 0 }}/{{ project.maxTeamMembers || 0 }} team members</span>
+            </div>
+          </div>
+
+          <div class="event-actions">
+            <ng-container [ngSwitch]="project.status">
+              <button
+                *ngSwitchCase="'NOT_STARTED'"
+                class="btn-register"
+                (click)="projectAction('Start', project.id!)"
+                [disabled]="!project.id"
+              >
+                Start Project
+              </button>
+              <button
+                *ngSwitchCase="'COMPLETED'"
+                class="btn-info"
+                (click)="projectAction('View', project.id!)"
+                [disabled]="!project.id"
+              >
+                View Details
+              </button>
+              <button
+                *ngSwitchDefault
+                class="btn-info"
+                (click)="projectAction('Join', project.id!)"
+                [disabled]="!project.id"
+              >
+                Join Project
+              </button>
+            </ng-container>
+
+            <button
+              class="btn-info"
+              (click)="projectAction('Details', project.id!)"
+              [disabled]="!project.id"
+            >
+              Details
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div
+        *ngIf="!loading && !errorMessage && filteredProjects.length === 0"
+        class="no-events-found"
+      >
+        No projects found matching your criteria.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Project Modal -->
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()"></div>
+<div class="modal" *ngIf="isModalOpen" (click)="$event.stopPropagation()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create New Project</h2>
+      <button class="close-btn" (click)="closeModal()">&times;</button>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #projectForm="ngForm" class="modal-body">
+      <div class="form-group">
+        <label for="projectName">Project Name</label>
+        <input
+          type="text"
+          id="projectName"
+          [(ngModel)]="newProject.projectName"
+          name="projectName"
+          placeholder="Enter project name"
+          required
+        />
+      </div>
+      <div class="form-group">
+        <label for="projectDescription">Description</label>
+        <textarea
+          id="projectDescription"
+          [(ngModel)]="newProject.description"
+          name="description"
+          placeholder="Describe the project..."
+          required
+        ></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="projectBudget">Budget</label>
+          <input
+            type="number"
+            id="projectBudget"
+            [(ngModel)]="newProject.budget"
+            name="budget"
+            placeholder="Enter budget"
+          />
+        </div>
+        <div class="form-group">
+          <label for="projectMaxTeam">Max Team Members</label>
+          <input
+            type="number"
+            id="projectMaxTeam"
+            [(ngModel)]="newProject.maxTeamMembers"
+            name="maxTeamMembers"
+            placeholder="Max team members"
+          />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn-save" [disabled]="!projectForm.valid">
+          Create Project
+        </button>
+        <button type="button" class="btn-cancel" (click)="closeModal()">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
