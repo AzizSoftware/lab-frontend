@@ -34,7 +34,7 @@
         .logo {
             font-size: 1.8rem;
             font-weight: bold;
-            color: #9AFF00;
+            color: #22C55E;
             text-decoration: none;
         }
 
@@ -55,7 +55,7 @@
         }
 
         .nav-link:hover {
-            color: #9AFF00;
+            color: #22C55E;
         }
 
         .auth-buttons {
@@ -65,8 +65,8 @@
 
         .btn-signin {
             background: transparent;
-            color: #9AFF00;
-            border: 2px solid #9AFF00;
+            color: #22C55E;
+            border: 2px solid #22C55E;
             padding: 0.5rem 1.5rem;
             text-decoration: none;
             border-radius: 5px;
@@ -75,7 +75,7 @@
         }
 
         .btn-signin:hover {
-            background: #9AFF00;
+            background: #22C55E;
             color: #000;
         }
 
@@ -95,7 +95,7 @@
             right: -20%;
             width: 60%;
             height: 100%;
-            background: #9AFF00;
+            background: #22C55E;
             transform: skewX(-15deg);
             z-index: 1;
             opacity: 0.1;
@@ -121,7 +121,7 @@
         }
 
         .hero-highlight {
-            color: #9AFF00;
+            color: #22C55E;
         }
 
         .hero-subtitle {
@@ -138,7 +138,7 @@
         }
 
         .btn-primary {
-            background: #9AFF00;
+            background: #22C55E;
             color: #000;
             padding: 1rem 2.5rem;
             text-decoration: none;
@@ -207,7 +207,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             text-align: center;
             transition: all 0.3s ease;
-            border-top: 4px solid #9AFF00;
+            border-top: 4px solid #22C55E;
             position: relative;
             overflow: hidden;
             cursor: pointer;
@@ -236,13 +236,13 @@
 
         .service-card:hover .service-icon {
             transform: rotateY(360deg) scale(1.1);
-            background: linear-gradient(45deg, #9AFF00, #7ACC00);
+            background: linear-gradient(45deg, #22C55E, #7ACC00);
         }
 
         .service-icon {
             width: 80px;
             height: 80px;
-            background: #9AFF00;
+            background: #22C55E;
             border-radius: 50%;
             margin: 0 auto 1.5rem;
             display: flex;
@@ -299,7 +299,7 @@
         }
 
         .file-type {
-            background: #9AFF00;
+            background: #22C55E;
             color: #000;
             padding: 0.25rem 0.75rem;
             border-radius: 20px;
@@ -332,7 +332,7 @@
         }
 
         .event-date {
-            background: #9AFF00;
+            background: #22C55E;
             color: #000;
             padding: 1rem;
             text-align: center;
@@ -387,7 +387,7 @@
             height: 120px;
             border-radius: 50%;
             margin: 0 auto 1rem;
-            background: #9AFF00;
+            background: #22C55E;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -403,7 +403,7 @@
         }
 
         .member-role {
-            color: #9AFF00;
+            color: #22C55E;
             font-weight: 500;
         }
 
@@ -442,7 +442,7 @@
 
         .footer-section h3 {
             margin-bottom: 1rem;
-            color: #9AFF00;
+            color: #22C55E;
         }
 
         .footer-section p, .footer-section li {
@@ -461,7 +461,7 @@
         }
 
         .footer-section a:hover {
-            color: #9AFF00;
+            color: #22C55E;
         }
 
         .newsletter {
@@ -478,7 +478,7 @@
         }
 
         .newsletter button {
-            background: #9AFF00;
+            background: #22C55E;
             color: #000;
             border: none;
             padding: 0.75rem 1.5rem;
