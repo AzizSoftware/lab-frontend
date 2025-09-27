@@ -1,6 +1,9 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import { appConfig } from './app/app.config';
-import { AppComponent } from './app/app.component';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { AppModule } from './app/app.module'; // Import the main module
 
-bootstrapApplication(AppComponent, appConfig)
-  .catch((err) => console.error(err));
+// This is the classic way to bootstrap, which correctly loads AppModule 
+// and all its imported dependencies (like CommonModule and FormsModule).
+platformBrowserDynamic().bootstrapModule(AppModule)
+  .catch(err => console.error(err));
+
+// NOTE: You can now remove 'bootstrapApplication' and 'appConfig' imports.

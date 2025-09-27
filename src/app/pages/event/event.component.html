@@ -1,0 +1,174 @@
+<div class="main-content">
+    <div class="container">
+        <div class="page-header">
+            <h1>Research Events & Conferences</h1>
+            <p>Join our academic events, workshops, conferences, and research presentations</p>
+        </div>
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="index.html" class="logo">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8IS0tIEdyZWVuIGNvbXB1dGVyL3BpeGVsIGljb24gLS0+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8IS0tIEJsYWNrIGxpbmVzIC0tPg0KPHJlY3QgeD0iNTQiIHk9IjE1IiB3aWR0aD0iNCIgaGVpZ2h0PSI4IiBmaWxsPSIjMDAwIi8+DQo8cmVjdCB4PSI1NCIgeT0iMzciIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjwhLS0gVGV4dCAtLT4NCjx0ZXh0IHg9IjcwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzMzMyI+bGltdGljPC90ZXh0Pg0KPC9nPg0KPC9zdmc+" 
+                    alt="LIMTIC">
+                </a>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="#" class="nav-link">About Us</a></li>
+                    <li><a href="events.html" class="nav-link active">Events</a></li>
+                    <li><a href="projects.html" class="nav-link">Projects</a></li>
+                    <li><a href="files.html" class="nav-link">Files</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="profile.html" class="btn-signin">Profile</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="filter-section">
+            <div class="search-filters">
+                <div class="filter-group">
+                    <label for="search">Search Events</label>
+                    <input type="text" id="search" [(ngModel)]="searchTerm" (keyup)="applyFilters()" placeholder="Search by title, location, or topic...">
+                </div>
+                <div class="filter-group">
+                    <label for="eventType">Event Type</label>
+                    <select id="eventType" [(ngModel)]="selectedEventType" (change)="applyFilters()">
+                        <option value="">All Types</option>
+                        <option value="conference">Conference</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="seminar">Seminar</option>
+                        <option value="symposium">Symposium</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="eventStatus">Status</label>
+                    <select id="eventStatus" [(ngModel)]="selectedEventStatus" (change)="applyFilters()">
+                        <option value="">All Status</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="ongoing">Ongoing</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <a href="#" class="btn-add" (click)="openModal()">+ Create Event</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="events-container" id="eventsContainer">
+            <div *ngIf="loading" class="loading-state">Loading events...</div>
+            <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
+
+            <div class="event-card" *ngFor="let event of filteredEvents">
+                <div 
+                    class="event-status" 
+                    [ngClass]="{
+                        'status-upcoming': event.status === 'upcoming',
+                        'status-ongoing': event.status === 'ongoing',
+                        'status-completed': event.status === 'completed'
+                    }">
+                    {{ event.status | titlecase }} 
+                </div>
+                
+                <img src="/event-test.webp">
+                
+                <div class="event-date">
+                    📅 {{ event.startDate }} at 
+                </div>
+                
+                <div class="event-content">
+                    <div class="event-title">{{ event.eventName }}</div>
+                    <div class="event-description">{{ event.description }}</div>
+                    
+                    <div class="event-meta">
+                        <div class="event-meta-item">
+                            <span>🏛️</span>
+                            <span>{{ event.location }}</span>
+                        </div>
+                        <div class="event-meta-item">
+                            <span>👥</span>
+                            <span>{{ event.availablePlaces || 0 }}/{{ event.maxParticipants }} registered</span> 
+                        </div>
+                        <div class="event-meta-item">
+                            <span>📋</span>
+                            <span>{{ event.eventName | uppercase }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="event-actions">
+                        <ng-container [ngSwitch]="event.status">
+                            <button 
+                                *ngSwitchCase="'upcoming'" 
+                                class="btn-register" 
+                                (click)="eventAction('Register', event.id)">
+                                Register
+                            </button>
+                            <button 
+                                *ngSwitchCase="'completed'" 
+                                class="btn-info" 
+                                (click)="eventAction('View Materials', event.id)">
+                                View Materials
+                            </button>
+                            <button 
+                                *ngSwitchDefault 
+                                class="btn-info" 
+                                (click)="eventAction('Join Event', event.id)">
+                                Join Event
+                            </button>
+                        </ng-container>
+                        
+                        <button class="btn-info" (click)="eventAction('Details', event.id)">Details</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div *ngIf="!loading && !errorMessage && filteredEvents.length === 0" class="no-events-found">
+                No events found matching your criteria.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="addEventModal" class="modal" [style.display]="isModalOpen ? 'block' : 'none'">
+    <div class="modal-content">
+        <span class="close" (click)="closeModal()">&times;</span> 
+        <h2>Create New Event</h2>
+        <form id="addEventForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title</label>
+                    <input type="text" id="eventTitle" placeholder="Enter event title" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventTypeInput">Event Type</label>
+                    <select id="eventTypeInput" required>
+                        <option value="">Select Type</option>
+                        <option value="conference">Conference</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="seminar">Seminar</option>
+                        <option value="symposium">Symposium</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="eventDescription">Description</label>
+                <textarea id="eventDescription" placeholder="Describe the event..." required></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="eventLocation">Location</label>
+                    <input type="text" id="eventLocation" placeholder="Event venue" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventCapacity">Capacity</label>
+                    <input type="number" id="eventCapacity" placeholder="Maximum attendees">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="eventImage">Event Image URL</label>
+                <input type="url" id="eventImage" placeholder="https://example.com/image.jpg">
+            </div>
+            <button type="submit" class="btn-submit">Create Event</button>
+        </form>
+    </div>
+</div>
