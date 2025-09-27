@@ -27,6 +27,20 @@ export class EventComponent implements OnInit {
   // Property for the modal state
   isModalOpen: boolean = false; 
 
+
+  newEvent: Event = {
+    eventName: '',
+    location: '',
+    budget: 0,
+    maxParticipants: 0,
+    status: 'UPCOMING',   // default status
+    startDate: new Date().toISOString(),
+    endDate: new Date().toISOString(),
+    description: '',
+    
+    enrolledUsers: []
+  };
+
   constructor(private eventService: EventService) {}
 
   ngOnInit(): void {
@@ -114,6 +128,35 @@ export class EventComponent implements OnInit {
   // Method to close the event creation modal.
   closeModal(): void {
     this.isModalOpen = false;
+  }
+
+  onSubmit(): void {
+    this.eventService.createEvent(this.newEvent).subscribe({
+      next: (createdEvent) => {
+        // add it locally
+        this.events.push(createdEvent);
+        this.filteredEvents.push(createdEvent);
+
+        // reset form
+        this.newEvent = {
+          eventName: '',
+          location: '',
+          budget: 0,
+          maxParticipants: 0,
+          status: 'UPCOMING',
+          startDate: new Date().toISOString(),
+          endDate: new Date().toISOString(),
+          description: '',
+          enrolledUsers: []
+        };
+
+        this.closeModal();
+      },
+      error: (err) => {
+        console.error('Failed to create event:', err);
+        this.errorMessage = 'Failed to create event';
+      }
+    });
   }
 
   // Method to handle various actions

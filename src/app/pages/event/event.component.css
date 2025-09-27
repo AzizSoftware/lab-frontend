@@ -413,6 +413,7 @@ body {
     right: 1.5rem;
     padding: 0.75rem 1.5rem;
     border-radius: 30px;
+    color:white;
     font-size: 0.8rem;
     font-weight: 700;
     z-index: 10;
@@ -442,7 +443,7 @@ body {
 
 /* Enhanced Event Date */
 .event-date {
-    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%); /* Applied Green Palette */
+    background: radial-gradient(circle at top left, #86EFAC 0%, #16A34A 100%); /* Applied Green Palette */
     color: #ffffff;
     padding: 1.5rem; /* Consolidated to larger padding */
     text-align: center;
