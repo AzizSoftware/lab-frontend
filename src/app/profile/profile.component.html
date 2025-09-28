@@ -1,0 +1,261 @@
+<div class="profile-container">
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="profile-banner">
+      <div class="profile-info">
+        <div class="profile-photo-container">
+          <img [src]="user?.imageUrl || 'default-avatar.jpg'" 
+               [alt]="formatUserName(user)" 
+               class="profile-photo"
+               *ngIf="!showPhotoUpload">
+          
+          <!-- Photo Upload Section -->
+          <div class="photo-upload" *ngIf="showPhotoUpload">
+            <input type="file" 
+                   #fileInput 
+                   (change)="onPhotoSelect($event)" 
+                   accept="image/*" 
+                   class="file-input">
+            <div class="upload-placeholder">
+              <i class="upload-icon">📷</i>
+              <span>Upload Photo</span>
+            </div>
+          </div>
+          
+          <button class="photo-edit-btn" 
+                  (click)="togglePhotoUpload()"
+                  *ngIf="isOwnProfile">
+            <i>✏️</i>
+          </button>
+        </div>
+        
+        <div class="profile-details">
+          <h1 class="profile-name">{{ formatUserName(user) }}</h1>
+          <div class="profile-meta">
+            <span class="role-badge" [style.background-color]="getUserRoleColor(user?.role)">
+              {{ getUserRoleDisplay(user?.role) }}
+            </span>
+            <span class="status-badge" [style.background-color]="getUserStatusColor(user?.status)">
+              {{ user?.status }}
+            </span>
+          </div>
+          <p class="profile-institute">{{ user?.institute }}</p>
+        </div>
+      </div>
+      
+      <div class="profile-actions" *ngIf="isOwnProfile">
+        <button class="btn-edit" (click)="toggleEditMode()">
+          {{ editMode ? 'Cancel' : 'Edit Profile' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="profile-content">
+    <div class="content-grid">
+      
+      <!-- Personal Information -->
+      <div class="info-card">
+        <h3 class="card-title">Personal Information</h3>
+        
+        <div class="info-grid" *ngIf="!editMode">
+          <div class="info-item">
+            <label>Email</label>
+            <span>{{ user?.email }}</span>
+          </div>
+          <div class="info-item">
+            <label>Phone</label>
+            <span>{{ user?.phone }}</span>
+          </div>
+          <div class="info-item">
+            <label>Date of Birth</label>
+            <span>{{ user?.dateOfBirth | date:'mediumDate' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Grade</label>
+            <span>{{ user?.grade }}</span>
+          </div>
+          <div class="info-item">
+            <label>Last Diploma</label>
+            <span>{{ user?.lastDiploma }}</span>
+          </div>
+          <div class="info-item">
+            <label>Research Area</label>
+            <span>{{ user?.researchArea }}</span>
+          </div>
+          <div class="info-item" *ngIf="user?.linkedInUrl">
+            <label>LinkedIn</label>
+           <a [href]="user?.linkedInUrl || '#'" target="_blank" class="linkedin-link">View Profile</a>
+          </div>
+        </div>
+        
+        <!-- Edit Form -->
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" *ngIf="editMode" class="edit-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input type="text" id="firstName" formControlName="firstName" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input type="text" id="lastName" formControlName="lastName" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="phone">Phone</label>
+              <input type="tel" id="phone" formControlName="phone" class="form-control">
+            </div>
+            
+            <div class="form-group">
+              <label for="grade">Grade</label>
+              <select id="grade" formControlName="grade" class="form-control">
+                <option value="Undergraduate">Undergraduate</option>
+                <option value="Graduate">Graduate</option>
+                <option value="PhD">PhD</option>
+                <option value="Postdoc">Postdoc</option>
+                <option value="Professor">Professor</option>
+              </select>
+            </div>
+            
+            <div class="form-group full-width">
+              <label for="institute">Institute</label>
+              <input type="text" id="institute" formControlName="institute" class="form-control">
+            </div>
+            
+            <div class="form-group full-width">
+              <label for="lastDiploma">Last Diploma</label>
+              <input type="text" id="lastDiploma" formControlName="lastDiploma" class="form-control">
+            </div>
+            
+            <div class="form-group full-width">
+              <label for="researchArea">Research Area</label>
+              <textarea id="researchArea" formControlName="researchArea" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group full-width">
+              <label for="linkedInUrl">LinkedIn URL</label>
+              <input type="url" id="linkedInUrl" formControlName="linkedInUrl" class="form-control">
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" [disabled]="profileForm.invalid || isLoading">
+              {{ isLoading ? 'Saving...' : 'Save Changes' }}
+            </button>
+            <button type="button" class="btn-secondary" (click)="cancelEdit()">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Document Uploads -->
+      <div class="uploads-card">
+        <div class="card-header">
+          <h3 class="card-title">Uploaded Documents</h3>
+          <button class="btn-upload" (click)="showUploadForm = !showUploadForm" *ngIf="isOwnProfile">
+            {{ showUploadForm ? 'Cancel' : 'Upload Document' }}
+          </button>
+        </div>
+        
+        <!-- Upload Form -->
+        <div class="upload-form-container" *ngIf="showUploadForm && isOwnProfile">
+          <form [formGroup]="uploadForm" (ngSubmit)="onFileUpload()" class="upload-form">
+            <div class="file-upload-section">
+              <input type="file" 
+                     #documentInput 
+                     (change)="onFileSelect($event)" 
+                     accept=".pdf,.doc,.docx,.txt"
+                     class="file-input">
+              <div class="file-upload-area" (click)="documentInput.click()" [class.has-file]="selectedFile">
+                <div class="upload-content">
+                  <i class="upload-icon">📁</i>
+                  <span *ngIf="!selectedFile">Click to select document</span>
+                  <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="metadata-grid">
+              <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" formControlName="title" class="form-control">
+              </div>
+              
+              <div class="form-group">
+                <label for="publicationDate">Publication Date</label>
+                <input type="date" id="publicationDate" formControlName="publicationDate" class="form-control">
+              </div>
+              
+              <div class="form-group full-width">
+                <label for="authors">Authors (comma-separated)</label>
+                <input type="text" id="authors" formControlName="authors" class="form-control">
+              </div>
+              
+              <div class="form-group full-width">
+                <label for="affiliations">Affiliations (comma-separated)</label>
+                <input type="text" id="affiliations" formControlName="affiliations" class="form-control">
+              </div>
+              
+              <div class="form-group full-width">
+                <label for="keywords">Keywords (comma-separated)</label>
+                <input type="text" id="keywords" formControlName="keywords" class="form-control">
+              </div>
+              
+              <div class="form-group">
+                <label for="doi">DOI (optional)</label>
+                <input type="text" id="doi" formControlName="doi" class="form-control">
+              </div>
+              
+              <div class="form-group full-width">
+                <label for="abstractText">Abstract</label>
+                <textarea id="abstractText" formControlName="abstractText" class="form-control" rows="4"></textarea>
+              </div>
+            </div>
+            
+            <div class="form-actions">
+              <button type="submit" class="btn-primary" [disabled]="uploadForm.invalid || !selectedFile || isUploading">
+                {{ isUploading ? 'Uploading...' : 'Upload Document' }}
+              </button>
+            </div>
+          </form>
+        </div>
+        
+        <!-- Documents List -->
+        <div class="documents-list" *ngIf="(user?.uploads?.length ?? 0) > 0">
+            <div class="document-item" *ngFor="let doc of user?.uploads">
+            <div class="doc-info">
+              <h4 class="doc-title">{{ doc.title }}</h4>
+              <p class="doc-meta">
+                <span class="doc-authors">{{ doc.authors.join(', ') }}</span>
+                <span class="doc-date">{{ doc.publicationDate | date:'mediumDate' }}</span>
+              </p>
+              <p class="doc-abstract" *ngIf="doc.abstractText">{{ doc.abstractText }}</p>
+              <div class="doc-tags" *ngIf="doc.keywords.length > 0">
+                <span class="tag" *ngFor="let keyword of doc.keywords">{{ keyword }}</span>
+              </div>
+            </div>
+            <div class="doc-actions">
+              <span class="file-type">{{ getFileExtension(doc.filename) }}</span>
+              <button class="btn-download" (click)="downloadFile(doc.filename)">
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="empty-state" *ngIf="!user?.uploads || user?.uploads?.length === 0">
+          <i class="empty-icon">📄</i>
+          <p>No documents uploaded yet</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="spinner"></div>
+  </div>
+</div>

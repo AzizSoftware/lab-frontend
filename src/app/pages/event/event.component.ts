@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { EventService, Event } from '../../services/event-service.service';
 import { forkJoin, Observable, of } from 'rxjs'; // Import forkJoin and of
 import { switchMap, catchError } from 'rxjs/operators'; // Import operators
+import { AuthService } from '../../services/auth-service.service';
 
 @Component({
   selector: 'app-event',
@@ -11,6 +12,7 @@ import { switchMap, catchError } from 'rxjs/operators'; // Import operators
   styleUrls: ['./event.component.css']
 })
 export class EventComponent implements OnInit {
+  isLoggedIn: boolean = false;  
   events: Event[] = [];
   // 1. ADDED: Array to hold the events displayed after filtering
   filteredEvents: Event[] = []; 
@@ -40,11 +42,20 @@ export class EventComponent implements OnInit {
     
     enrolledUsers: []
   };
-
-  constructor(private eventService: EventService) {}
+  
+  constructor(
+    private eventService: EventService,
+    private authService: AuthService   // <-- added 'private' so it's a class property
+  ) {}
 
   ngOnInit(): void {
     this.fetchEvents();
+    this.isLoggedIn = this.authService.isLoggedIn();
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.isLoggedIn = false;  // Update local flag after logout
   }
 
   fetchEvents(): void {

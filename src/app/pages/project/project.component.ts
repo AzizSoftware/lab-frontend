@@ -1,6 +1,7 @@
 // src/app/pages/project/project.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ProjectService,Project } from '../../services/project-service.service';
+import { AuthService } from '../../services/auth-service.service';
 
 @Component({
   selector: 'app-project',
@@ -8,6 +9,7 @@ import { ProjectService,Project } from '../../services/project-service.service';
   styleUrls: ['./project.component.css']
 })
 export class ProjectComponent implements OnInit {
+  isLoggedIn: boolean = false;
   projects: Project[] = [];
   filteredProjects: Project[] = [];
   newProject: Project = {
@@ -28,10 +30,17 @@ export class ProjectComponent implements OnInit {
   errorMessage: string = '';
   isModalOpen: boolean = false;
 
-  constructor(private projectService: ProjectService) {}
+  constructor(private projectService: ProjectService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.loadProjects();
+    this.isLoggedIn = this.authService.isLoggedIn();
+  }
+  logout(): void {
+    this.authService.logout();
+    this.isLoggedIn = false;  // Update local flag after logout
   }
 
   // Load all projects

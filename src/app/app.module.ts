@@ -2,32 +2,39 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'; 
 import { HomeComponent } from './pages/home/home.component';
 import { EventComponent } from './pages/event/event.component';
 import { ProjectComponent } from './pages/project/project.component';
-// NOTE: HttpClientModule removed and replaced with provideHttpClient in providers
-import { provideHttpClient } from '@angular/common/http'; // <-- NEW: Import the functional provider
+import { ProfileComponent } from './profile/profile.component';
+import { provideHttpClient } from '@angular/common/http'; 
+import { RouterModule } from '@angular/router';
+import { LoginComponent } from './pages/login/login.component';
+import { SignupComponent } from './pages/signup/signup.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     EventComponent,
-    ProjectComponent
+    ProjectComponent,
+    ProfileComponent,
+    LoginComponent,
+    SignupComponent
+   
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     CommonModule,
     FormsModule,
-    // HttpClientModule has been removed here to fix the deprecation warning
+    ReactiveFormsModule, // ✅ should be here
+    RouterModule.forRoot([]) // router enabled
   ],
   providers: [
-    // This functional provider replaces HttpClientModule and resolves the dependency injection error.
     provideHttpClient() 
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}
