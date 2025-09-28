@@ -13,17 +13,9 @@ export class SignupComponent {
 
   constructor(private fb: FormBuilder, private auth: AuthService) {
     this.signupForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
+      name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      dateOfBirth: ['', Validators.required],
-      phone: ['', Validators.required],
-      grade: ['', Validators.required],
-      institute: ['', Validators.required],
-      lastDiploma: ['', Validators.required],
-      researchArea: ['', Validators.required],
-      linkedInUrl: ['']
+      password: ['', Validators.required]
     });
   }
 
