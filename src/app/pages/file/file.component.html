@@ -1,0 +1,180 @@
+<div class="main-content">
+    <div class="container">
+        <div class="page-header">
+            <h1>Research Files</h1>
+            <p>Access and manage academic documents, reports, and research files</p>
+        </div>
+        <nav class="navbar">
+            <div class="nav-container">
+                <a href="#" class="logo">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8IS0tIEdyZWVuIGNvbXB1dGVyL3BpeGVsIGljb24gLS0+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8IS0tIEJsYWNrIGxpbmVzIC00+DQo8cmVjdCB4PSI1NCIgeT0iMTUiIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjxyZWN0IHg9IjU0IiB5PSIzNyIgd2lkdGg9IjQiIGhlaWdodD0iOCIgZmlsbD0iIzAwMCIvPg0KPC9nPg0KPC9zdmc+" 
+                        alt="LIMTIC" style="height: 40px; width: auto;">
+                    <span>LIMTIC</span>
+                </a>
+                <ul class="nav-menu">
+                    <li><a routerLink="/home" class="nav-link" routerLinkActive="active">Home</a></li>
+                    <li><a routerLink="/event" class="nav-link" routerLinkActive="active">Events</a></li>
+                    <li><a routerLink="/project" class="nav-link" routerLinkActive="active">Projects</a></li>
+                    <li><a routerLink="/file" class="nav-link" routerLinkActive="active">Files</a></li>
+                </ul>
+                <div class="auth-buttons" *ngIf="!isLoggedIn">
+                    <a routerLink="/signup" class="nav-link" routerLinkActive="active">Sign Up</a>
+                </div>
+                <div class="auth-buttons" *ngIf="!isLoggedIn">
+                    <a routerLink="/login" class="nav-link" routerLinkActive="active">Sign In</a>
+                </div>
+                <div class="auth-buttons" *ngIf="isLoggedIn">
+                    <a routerLink="/profile" class="nav-link" routerLinkActive="active">Profile</a>
+                </div>
+                <div class="auth-buttons" *ngIf="isLoggedIn">
+                    <a (click)="logout()" class="nav-link">Logout</a>
+                </div>
+            </div>
+        </nav>
+        <div class="filter-section">
+            <div class="search-filters">
+                <div class="filter-group">
+                    <label for="searchTitle">Search by Title</label>
+                    <input type="text" id="searchTitle" [(ngModel)]="searchTitle" (keyup)="applyFilters()" placeholder="Search by title...">
+                </div>
+                <div class="filter-group">
+                    <label for="searchKeyword">Search by Keyword</label>
+                    <input type="text" id="searchKeyword" [(ngModel)]="searchKeyword" (keyup)="applyFilters()" placeholder="Search by keyword...">
+                </div>
+                <div class="filter-group">
+                    <label for="searchAuthor">Search by Author</label>
+                    <input type="text" id="searchAuthor" [(ngModel)]="searchAuthor" (keyup)="applyFilters()" placeholder="Search by author...">
+                </div>
+                <div class="filter-group">
+                    <label for="searchDateAfter">Date After</label>
+                    <input type="date" id="searchDateAfter" [(ngModel)]="searchDateAfter" (change)="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <label for="searchDateBefore">Date Before</label>
+                    <input type="date" id="searchDateBefore" [(ngModel)]="searchDateBefore" (change)="applyFilters()">
+                </div>
+                <div class="filter-group">
+                    <label>&nbsp;</label>
+                    <div class="add-file-container">
+                        <button class="btn-add" (click)="openModal()">+ Add File</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="files-container" id="filesContainer">
+            <div *ngIf="loading" class="loading-state">Loading files...</div>
+            <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
+
+            <table class="files-table" *ngIf="!loading && !errorMessage && filteredFiles.length > 0">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Keyword</th>
+                        <th>Author</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let file of filteredFiles">
+                        <td>{{ file.title }}</td>
+                        <td><span class="file-type">{{ file.keyword }}</span></td>
+                        <td>{{ file.author }}</td>
+                        <td>{{ file.date }}</td>
+                        <td>
+                            <div class="file-actions">
+                                <button class="btn-info" (click)="fileAction('Download', file.id)">Download</button>
+                                <button class="btn-info" (click)="fileAction('Details', file.id)">Details</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div *ngIf="!loading && !errorMessage && filteredFiles.length === 0" class="no-files-found">
+                No files found matching your criteria.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Overlay -->
+<div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()"></div>
+
+<!-- Modal -->
+<div class="modal" *ngIf="isModalOpen" (click)="$event.stopPropagation()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+            <h2>Create New File</h2>
+            <button class="close-btn" (click)="closeModal()">&times;</button>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #fileForm="ngForm" class="modal-body">
+            <div class="form-group">
+                <label for="fileTitle">File Title</label>
+                <input
+                    type="text"
+                    id="fileTitle"
+                    [(ngModel)]="newFile.title"
+                    name="title"
+                    placeholder="Enter file title"
+                    required
+                />
+            </div>
+            <div class="form-group">
+                <label for="fileKeyword">Keyword</label>
+                <input
+                    type="text"
+                    id="fileKeyword"
+                    [(ngModel)]="newFile.keyword"
+                    name="keyword"
+                    placeholder="Enter keyword"
+                    required
+                />
+            </div>
+            <div class="form-group">
+                <label for="fileAuthor">Author</label>
+                <input
+                    type="text"
+                    id="fileAuthor"
+                    [(ngModel)]="newFile.author"
+                    name="author"
+                    placeholder="Enter author name"
+                    required
+                />
+            </div>
+            <div class="form-group">
+                <label for="fileDate">Date</label>
+                <input
+                    type="date"
+                    id="fileDate"
+                    [(ngModel)]="newFile.date"
+                    name="date"
+                    required
+                />
+            </div>
+            <div class="form-group">
+                <label for="fileDescription">Description</label>
+                <textarea
+                    id="fileDescription"
+                    [(ngModel)]="newFile.description"
+                    name="description"
+                    placeholder="Describe the file..."
+                ></textarea>
+            </div>
+            <div class="modal-actions">
+                <button
+                    type="submit"
+                    class="btn-save"
+                    [disabled]="!fileForm.valid"
+                >
+                    Create File
+                </button>
+                <button type="button" class="btn-cancel" (click)="closeModal()">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

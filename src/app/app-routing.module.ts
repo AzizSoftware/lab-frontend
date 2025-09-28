@@ -6,6 +6,7 @@ import { ProjectComponent } from './pages/project/project.component';
 import { ProfileComponent } from './profile/profile.component';
 import { LoginComponent } from './pages/login/login.component';
 import { SignupComponent } from './pages/signup/signup.component';
+import { FileComponent } from './pages/file/file.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -15,7 +16,8 @@ export const routes: Routes = [
   { path: 'profile', component:ProfileComponent},
   { path: 'login', component:LoginComponent},
   { path: 'signup', component:SignupComponent},
-  { path: '**', redirectTo: '/login' }
+  { path: '**', redirectTo: '/login' },
+  {path: 'file',component:FileComponent}
 ];
 
 @NgModule({

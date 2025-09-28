@@ -12,7 +12,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { SignupComponent } from './pages/signup/signup.component';
-
+import { FileComponent } from './pages/file/file.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -21,7 +21,8 @@ import { SignupComponent } from './pages/signup/signup.component';
     ProjectComponent,
     ProfileComponent,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    FileComponent
    
   ],
   imports: [
