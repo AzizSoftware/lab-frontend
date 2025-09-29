@@ -7,7 +7,7 @@
         <nav class="navbar">
             <div class="nav-container">
                 <a href="#" class="logo">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8IS0tIEdyZWVuIGNvbXB1dGVyL3BpeGVsIGljb24gLS0+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8IS0tIEJsYWNrIGxpbmVzIC00+DQo8cmVjdCB4PSI1NCIgeT0iMTUiIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjxyZWN0IHg9IjU0IiB5PSIzNyIgd2lkdGg9IjQiIGhlaWdodD0iOCIgZmlsbD0iIzAwMCIvPg0KPC9nPg0KPC9zdmc+" 
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSI1NCIgeT0iMTUiIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjxyZWN0IHg9IjU0IiB5PSIzNyIgd2lkdGg9IjQiIGhlaWdodD0iOCIgZmlsbD0iIzAwMCIvPg0KPHRleHQgeD0iNzAiIHk9IjQyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMzMzIj5saW10aWM8L3RleHQ+DQo8L2c+DQo8L3N2Zz4=" 
                         alt="LIMTIC" style="height: 40px; width: auto;">
                     <span>LIMTIC</span>
                 </a>
@@ -50,10 +50,6 @@
                     <input type="date" id="searchDateAfter" [(ngModel)]="searchDateAfter" (change)="applyFilters()">
                 </div>
                 <div class="filter-group">
-                    <label for="searchDateBefore">Date Before</label>
-                    <input type="date" id="searchDateBefore" [(ngModel)]="searchDateBefore" (change)="applyFilters()">
-                </div>
-                <div class="filter-group">
                     <label>&nbsp;</label>
                     <div class="add-file-container">
                         <button class="btn-add" (click)="openModal()">+ Add File</button>
@@ -70,18 +66,22 @@
                 <thead>
                     <tr>
                         <th>Title</th>
-                        <th>Keyword</th>
-                        <th>Author</th>
-                        <th>Date</th>
+                        <th>Keywords</th>
+                        <th>Authors</th>
+                        <th>Publication Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let file of filteredFiles">
                         <td>{{ file.title }}</td>
-                        <td><span class="file-type">{{ file.keyword }}</span></td>
-                        <td>{{ file.author }}</td>
-                        <td>{{ file.date }}</td>
+                        <td>
+                            <span class="file-type" *ngFor="let keyword of file.keywords; let last = last">{{ keyword }}{{ last ? '' : ', ' }}</span>
+                        </td>
+                        <td>
+                            <span *ngFor="let author of file.authors; let last = last">{{ author }}{{ last ? '' : ', ' }}</span>
+                        </td>
+                        <td>{{ file.publicationDate }}</td>
                         <td>
                             <div class="file-actions">
                                 <button class="btn-info" (click)="fileAction('Download', file.id)">Download</button>
@@ -106,11 +106,25 @@
 <div class="modal" *ngIf="isModalOpen" (click)="$event.stopPropagation()">
     <div class="modal-content" (click)="$event.stopPropagation()">
         <div class="modal-header">
-            <h2>Create New File</h2>
+            <h2>Upload New File</h2>
             <button class="close-btn" (click)="closeModal()">&times;</button>
         </div>
 
         <form (ngSubmit)="onSubmit()" #fileForm="ngForm" class="modal-body">
+            <div class="form-group">
+                <label for="fileInput">Select File</label>
+                <div class="file-drop-area" (dragover)="onDragOver($event)" (drop)="onFileDrop($event)">
+                    <input
+                        type="file"
+                        id="fileInput"
+                        (change)="onFileChange($event)"
+                        name="file"
+                        required
+                    />
+                    <p>Drag and drop a file here or click to browse</p>
+                    <p *ngIf="selectedFile">{{ selectedFile.name }}</p>
+                </div>
+            </div>
             <div class="form-group">
                 <label for="fileTitle">File Title</label>
                 <input
@@ -123,53 +137,94 @@
                 />
             </div>
             <div class="form-group">
-                <label for="fileKeyword">Keyword</label>
+                <label for="fileKeywords">Keywords (comma-separated)</label>
                 <input
                     type="text"
-                    id="fileKeyword"
-                    [(ngModel)]="newFile.keyword"
-                    name="keyword"
-                    placeholder="Enter keyword"
+                    id="fileKeywords"
+                    [(ngModel)]="keywordsInput"
+                    name="keywords"
+                    placeholder="Enter keywords (e.g., research, AI, data)"
                     required
                 />
             </div>
             <div class="form-group">
-                <label for="fileAuthor">Author</label>
+                <label for="fileAuthors">Authors (comma-separated)</label>
                 <input
                     type="text"
-                    id="fileAuthor"
-                    [(ngModel)]="newFile.author"
-                    name="author"
-                    placeholder="Enter author name"
+                    id="fileAuthors"
+                    [(ngModel)]="authorsInput"
+                    name="authors"
+                    placeholder="Enter author names (e.g., John Doe, Jane Smith)"
                     required
                 />
             </div>
             <div class="form-group">
-                <label for="fileDate">Date</label>
+                <label for="fileType">File Type</label>
+                <select
+                    id="fileType"
+                    [(ngModel)]="selectedFileType"
+                    name="fileType"
+                    required
+                >
+                    <option value="" disabled>Select file type</option>
+                    <option *ngFor="let type of fileTypeOptions" [value]="type">{{ type }}</option>
+                    <option value="custom">Custom</option>
+                </select>
+                <input
+                    *ngIf="selectedFileType === 'custom'"
+                    [(ngModel)]="customFileType"
+                    name="customFileType"
+                    placeholder="Enter custom file type"
+                    class="mt-2"
+                    required
+                />
+            </div>
+            <div class="form-group">
+                <label for="fileAffiliations">Affiliations (comma-separated, optional)</label>
+                <input
+                    type="text"
+                    id="fileAffiliations"
+                    [(ngModel)]="affiliationsInput"
+                    name="affiliations"
+                    placeholder="Enter affiliations (e.g., University X, Lab Y)"
+                />
+            </div>
+            <div class="form-group">
+                <label for="filePublicationDate">Publication Date</label>
                 <input
                     type="date"
-                    id="fileDate"
-                    [(ngModel)]="newFile.date"
-                    name="date"
+                    id="filePublicationDate"
+                    [(ngModel)]="newFile.publicationDate"
+                    name="publicationDate"
                     required
                 />
             </div>
             <div class="form-group">
-                <label for="fileDescription">Description</label>
+                <label for="fileAbstractText">Abstract</label>
                 <textarea
-                    id="fileDescription"
-                    [(ngModel)]="newFile.description"
-                    name="description"
-                    placeholder="Describe the file..."
+                    id="fileAbstractText"
+                    [(ngModel)]="newFile.abstractText"
+                    name="abstractText"
+                    placeholder="Enter abstract text..."
                 ></textarea>
+            </div>
+            <div class="form-group">
+                <label for="fileDoi">DOI (Optional)</label>
+                <input
+                    type="text"
+                    id="fileDoi"
+                    [(ngModel)]="newFile.doi"
+                    name="doi"
+                    placeholder="Enter DOI (e.g., 10.1000/xyz123)"
+                />
             </div>
             <div class="modal-actions">
                 <button
                     type="submit"
                     class="btn-save"
-                    [disabled]="!fileForm.valid"
+                    [disabled]="!fileForm.valid || !selectedFile"
                 >
-                    Create File
+                    Upload File
                 </button>
                 <button type="button" class="btn-cancel" (click)="closeModal()">
                     Cancel

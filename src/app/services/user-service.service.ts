@@ -4,18 +4,17 @@ import { Observable, BehaviorSubject } from 'rxjs';
 
 export interface FileDocument {
   id: string;
-  filename: string;
-  originalFilename: string;
-  contentType: string;
-  size: number;
-  uploadDate: string;
-  title: string;
-  authors: string[];
-  affiliations: string[];
-  publicationDate: string;
-  abstractText: string;
-  keywords: string[];
+  filename?: string; // Optional to handle existing files
+  fileType?: string; // New field for file type
+  title?: string;
+  authors?: string[];
+  affiliations?: string[];
+  publicationDate?: string;
+  abstractText?: string;
+  keywords?: string[];
   doi?: string;
+  ownerId?: string;
+  uploadedAt?: string;
 }
 
 export interface User {
@@ -67,14 +66,12 @@ export class UserService {
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    // Check if user is logged in on service initialization
     const token = this.getToken();
     if (token) {
       this.loadCurrentUser();
     }
   }
 
-  // Authentication Methods
   signup(userData: SignupRequest): Observable<any> {
     return this.http.post(`${this.baseUrl}/signup`, userData);
   }
@@ -91,7 +88,6 @@ export class UserService {
     this.currentUserSubject.next(null);
   }
 
-  // Token Management
   saveToken(token: string): void {
     localStorage.setItem('authToken', token);
   }
@@ -112,7 +108,6 @@ export class UserService {
     return this.getToken() !== null;
   }
 
-  // User CRUD Operations
   getAllUsers(): Observable<User[]> {
     return this.http.get<User[]>(this.baseUrl, {
       headers: this.getAuthHeaders()
@@ -139,7 +134,6 @@ export class UserService {
     });
   }
 
-  // File Upload Methods
   uploadFile(
     email: string, 
     file: File, 
@@ -151,29 +145,21 @@ export class UserService {
       abstractText: string;
       keywords: string[];
       doi?: string;
+      fileType: string;
     }
   ): Observable<User> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('title', fileMetadata.title);
-    
-    // Handle array parameters
-    fileMetadata.authors.forEach(author => {
-      formData.append('authors', author);
-    });
-    fileMetadata.affiliations.forEach(affiliation => {
-      formData.append('affiliations', affiliation);
-    });
-    fileMetadata.keywords.forEach(keyword => {
-      formData.append('keywords', keyword);
-    });
-    
+    fileMetadata.authors.forEach(author => formData.append('authors', author));
+    fileMetadata.affiliations.forEach(affiliation => formData.append('affiliations', affiliation));
+    fileMetadata.keywords.forEach(keyword => formData.append('keywords', keyword));
     formData.append('publicationDate', fileMetadata.publicationDate);
     formData.append('abstractText', fileMetadata.abstractText);
-    
     if (fileMetadata.doi) {
       formData.append('doi', fileMetadata.doi);
     }
+    formData.append('fileType', fileMetadata.fileType);
 
     return this.http.post<User>(`${this.baseUrl}/${email}/uploads`, formData, {
       headers: this.getAuthHeadersForFormData()
@@ -183,16 +169,15 @@ export class UserService {
   uploadProfilePhoto(email: string, file: File): Observable<User> {
     const formData = new FormData();
     formData.append('file', file);
-
     return this.http.post<User>(`${this.baseUrl}/${email}/photo`, formData, {
       headers: this.getAuthHeadersForFormData()
     });
   }
 
-  downloadFile(filename: string): Observable<Blob> {
-    return this.http.get(`${this.baseUrl}/uploads/${filename}`, {
-      responseType: 'blob',
-      headers: this.getAuthHeaders()
+  downloadFile(url: string): Observable<Blob> {
+    return this.http.get(url, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
     });
   }
 
@@ -204,7 +189,6 @@ export class UserService {
     });
   }
 
-  // Current User Management
   loadCurrentUser(): void {
     const email = this.getUserEmail();
     if (email) {
@@ -227,20 +211,15 @@ export class UserService {
     if (!email) {
       throw new Error('No user logged in');
     }
-
     return this.http.put<User>(`${this.baseUrl}/${email}`, userData, {
       headers: this.getAuthHeaders()
-    }).pipe(
-      // Update the current user subject with new data
-      // Note: In a real app, you'd want to handle this more carefully
-    );
+    });
   }
 
-  // Helper Methods
   private getAuthHeaders(): HttpHeaders {
     const token = this.getToken();
     return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
   }
@@ -248,12 +227,10 @@ export class UserService {
   private getAuthHeadersForFormData(): HttpHeaders {
     const token = this.getToken();
     return new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-      // Don't set Content-Type for FormData, let browser set it
+      Authorization: `Bearer ${token}`
     });
   }
 
-  // Utility Methods
   getFileUrl(filename: string): string {
     return `${this.baseUrl}/uploads/${filename}`;
   }

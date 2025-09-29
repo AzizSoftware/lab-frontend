@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
-
-import { UserService,User,FileDocument } from '../services/user-service.service';
+import { UserService, User, FileDocument } from '../services/user-service.service';
+import { FileService } from '../services/file-service.service';
 
 @Component({
   selector: 'app-profile',
@@ -26,14 +26,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
   isUploading = false;
   
   // Forms
-    profileForm!: FormGroup;
-    uploadForm!: FormGroup;
+  profileForm!: FormGroup;
+  uploadForm!: FormGroup;
+
   // File handling
   selectedFile: File | null = null;
   selectedPhotoFile: File | null = null;
+  fileTypeOptions: string[] = [];
+  selectedFileType: string = '';
+  customFileType: string = '';
 
   constructor(
     private userService: UserService,
+    private fileService: FileService,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router
@@ -43,6 +48,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loadUserProfile();
+    this.loadFileTypes();
+    this.syncFileType();
   }
 
   ngOnDestroy(): void {
@@ -70,15 +77,38 @@ export class ProfileComponent implements OnInit, OnDestroy {
       publicationDate: ['', Validators.required],
       abstractText: ['', [Validators.required, Validators.minLength(50)]],
       keywords: ['', Validators.required],
-      doi: ['']
+      doi: [''],
+      fileType: ['', Validators.required]
     });
+  }
+
+  private loadFileTypes(): void {
+    this.fileService.getFileTypes().subscribe({
+      next: (types) => {
+        this.fileTypeOptions = types;
+      },
+      error: (err) => {
+        console.error('Failed to load file types:', err);
+        this.fileTypeOptions = ['dataset', 'certification', 'research paper', 'report'];
+      }
+    });
+  }
+
+  private syncFileType(): void {
+    this.uploadForm.get('fileType')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(value => {
+        this.selectedFileType = value;
+        if (value !== 'custom') {
+          this.customFileType = '';
+        }
+      });
   }
 
   // Data Loading Methods
   private loadUserProfile(): void {
     this.isLoading = true;
     
-    // Get email from route params or current user
     const emailFromRoute = this.route.snapshot.paramMap.get('email');
     const currentUserEmail = this.userService.getUserEmail();
     
@@ -172,13 +202,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   onPhotoSelect(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         this.showErrorMessage('Please select a valid image file.');
         return;
       }
       
-      // Validate file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
         this.showErrorMessage('Image file size must be less than 5MB.');
         return;
@@ -216,20 +244,29 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   // Document Upload Methods
+  toggleUploadForm(): void {
+    this.showUploadForm = !this.showUploadForm;
+    this.selectedFile = null;
+    this.selectedFileType = '';
+    this.customFileType = '';
+    this.uploadForm.reset();
+  }
+
   onFileSelect(event: any): void {
     const file = event.target.files[0];
     if (file) {
-      // Validate file type
-      const allowedTypes = ['application/pdf', 'application/msword', 
-                           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                           'text/plain'];
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'text/plain'
+      ];
       
       if (!allowedTypes.includes(file.type)) {
         this.showErrorMessage('Please select a valid document file (PDF, DOC, DOCX, TXT).');
         return;
       }
       
-      // Validate file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
         this.showErrorMessage('Document file size must be less than 10MB.');
         return;
@@ -244,20 +281,33 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.isUploading = true;
       
       const formData = this.uploadForm.value;
+      const fileType = this.selectedFileType === 'custom' ? this.customFileType : this.selectedFileType;
+      if (!fileType) {
+        this.showErrorMessage('Please select or enter a file type.');
+        this.isUploading = false;
+        return;
+      }
+
       const fileMetadata = {
-        title: formData.title,
+        title: formData.title as string,
         authors: this.parseCommaSeparatedList(formData.authors),
         affiliations: this.parseCommaSeparatedList(formData.affiliations),
-        publicationDate: formData.publicationDate,
-        abstractText: formData.abstractText,
+        publicationDate: formData.publicationDate as string,
+        abstractText: formData.abstractText as string,
         keywords: this.parseCommaSeparatedList(formData.keywords),
-        doi: formData.doi || undefined
+        doi: formData.doi || undefined,
+        fileType: fileType as string
       };
       
       this.userService.uploadFile(this.user.email, this.selectedFile, fileMetadata)
         .pipe(
           takeUntil(this.destroy$),
-          finalize(() => this.isUploading = false)
+          finalize(() => {
+            this.isUploading = false;
+            if (this.selectedFileType === 'custom' && this.customFileType) {
+              this.loadFileTypes();
+            }
+          })
         )
         .subscribe({
           next: (updatedUser) => {
@@ -280,19 +330,27 @@ export class ProfileComponent implements OnInit, OnDestroy {
   private resetUploadForm(): void {
     this.uploadForm.reset();
     this.selectedFile = null;
+    this.selectedFileType = '';
+    this.customFileType = '';
     this.showUploadForm = false;
   }
 
   // File Download Method
-  downloadFile(filename: string): void {
-    this.userService.downloadFile(filename)
+  downloadFile(file: FileDocument): void {
+    if (!file.filename) {
+      this.showErrorMessage('File name is missing. Cannot download.');
+      console.error('FileDocument missing filename:', file);
+      return;
+    }
+    const url = this.userService.getFileUrl(file.filename);
+    this.userService.downloadFile(url)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (blob) => {
           const url = window.URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = filename;
+          link.download = file.title ?? file.filename ?? 'downloaded_file';
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -337,13 +395,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   // Message Methods
   private showSuccessMessage(message: string): void {
-    // Implement your preferred notification system here
     console.log('Success:', message);
     // Example: this.notificationService.showSuccess(message);
   }
 
   private showErrorMessage(message: string): void {
-    // Implement your preferred notification system here
     console.error('Error:', message);
     // Example: this.notificationService.showError(message);
   }

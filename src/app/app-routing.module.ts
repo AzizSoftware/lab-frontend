@@ -16,8 +16,9 @@ export const routes: Routes = [
   { path: 'profile', component:ProfileComponent},
   { path: 'login', component:LoginComponent},
   { path: 'signup', component:SignupComponent},
+  {path: 'file',component:FileComponent},
   { path: '**', redirectTo: '/login' },
-  {path: 'file',component:FileComponent}
+  
 ];
 
 @NgModule({

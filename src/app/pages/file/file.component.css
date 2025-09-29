@@ -393,6 +393,7 @@ body {
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.02em;
+    margin-right: 0.5rem;
 }
 
 /* File Actions */
@@ -548,6 +549,31 @@ body {
     height: 140px;
     resize: vertical;
     line-height: 1.6;
+}
+
+.file-drop-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+}
+
+.file-drop-area:hover, .file-drop-area.dragover {
+    border-color: #22C55E;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.15);
+}
+
+.file-drop-area input[type="file"] {
+    display: none;
+}
+
+.file-drop-area p {
+    color: #475569;
+    font-weight: 500;
+    margin: 0.5rem 0;
 }
 
 .modal-actions {
