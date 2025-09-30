@@ -1,49 +1,96 @@
-<div class="profile-container">
-  <div *ngIf="isLoading" class="loading-overlay">
-    <div class="spinner"></div>
+<!-- Navbar -->
+<nav class="navbar">
+  <div class="nav-container">
+    <a href="#" class="logo">
+      <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSI1NCIgeT0iMTUiIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjxyZWN0IHg9IjU0IiB5PSIzNyIgd2lkdGg9IjQiIGhlaWdodD0iOCIgZmlsbD0iIzAwMCIvPg0KPHRleHQgeD0iNzAiIHk9IjQyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMzMzIj5saW10aWM8L3RleHQ+DQo8L2c+DQo8L3N2Zz4=" 
+           alt="LIMTIC" style="height: 40px; width: auto;">
+    </a>
+    <ul class="nav-menu">
+      <li><a routerLink="/home" class="nav-link" routerLinkActive="active">Home</a></li>
+      <li><a routerLink="/event" class="nav-link" routerLinkActive="active">Events</a></li>
+      <li><a routerLink="/project" class="nav-link" routerLinkActive="active">Projects</a></li>
+      <li><a routerLink="/file" class="nav-link" routerLinkActive="active">Files</a></li>
+    </ul>
+    <div class="auth-buttons" *ngIf="!isLoggedIn">
+      <a routerLink="/signup" class="nav-link" routerLinkActive="active">Sign Up</a>
+    </div>
+    <div class="auth-buttons" *ngIf="!isLoggedIn">
+      <a routerLink="/login" class="nav-link" routerLinkActive="active">Sign In</a>
+    </div>
+    <div class="auth-buttons" *ngIf="isLoggedIn">
+      <a routerLink="/profile" class="nav-link" routerLinkActive="active">Profile</a>
+    </div>
+    <div class="auth-buttons" *ngIf="isLoggedIn">
+      <a (click)="logout()" class="nav-link">Logout</a>
+    </div>
   </div>
-  
-  <div *ngIf="!isLoading && user" class="profile-content">
-    <!-- Profile Header -->
-    <div class="profile-header">
-      <div class="profile-banner">
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+  <div class="container">
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      Loading profile...
+    </div>
+    
+    <div *ngIf="!isLoading && user" class="profile-content">
+      <!-- Header -->
+      <div class="page-header">
         <div class="profile-info">
           <div class="profile-photo-container">
             <img *ngIf="user.imageUrl" [src]="user.imageUrl" alt="Profile Photo" class="profile-photo">
+            <div *ngIf="!user.imageUrl" class="profile-photo-placeholder">No Photo</div>
           </div>
-          <div class="profile-details">
-            <h1>{{ formatUserName(user) }}</h1>
-            <div class="profile-meta">
-              <span class="status-badge" [ngStyle]="{'background-color': getUserStatusColor(user.status)}">
-                {{ user.status || 'Unknown' }}
-              </span>
-              <span class="role-badge" [ngStyle]="{'background-color': getUserRoleColor(user.role)}">
-                {{ getUserRoleDisplay(user.role) }}
-              </span>
-            </div>
-            <p class="profile-institute">{{ user.email }}</p>
+          <h1>{{ formatUserName(user) }}</h1>
+          <p>{{ user.email }}</p>
+          <div class="profile-meta">
+            <span class="status-badge" [ngStyle]="{'background-color': getUserStatusColor(user.status)}">
+              {{ user.status || 'Unknown' }}
+            </span>
+            <span class="role-badge" [ngStyle]="{'background-color': getUserRoleColor(user.role)}">
+              {{ getUserRoleDisplay(user.role) }}
+            </span>
           </div>
-        </div>
-        <div *ngIf="isOwnProfile" class="profile-actions">
-          <button (click)="toggleEditMode()" class="btn-edit">
-            {{ editMode ? 'Cancel' : 'Edit Profile' }}
-          </button>
-          <button *ngIf="!editMode" (click)="togglePhotoUpload()" class="btn-upload">
-            {{ showPhotoUpload ? 'Cancel Photo Upload' : 'Upload Photo' }}
-          </button>
-          <button *ngIf="!editMode" (click)="toggleUploadForm()" class="btn-upload">
-            {{ showUploadForm ? 'Cancel Upload' : 'Upload Document' }}
-          </button>
+          <div *ngIf="isOwnProfile" class="profile-actions">
+            <button (click)="toggleEditMode()" class="btn-add">
+              {{ editMode ? 'Cancel Edit' : 'Edit Profile' }}
+            </button>
+            <button (click)="togglePhotoUpload()" class="btn-add">
+              {{ showPhotoUpload ? 'Cancel Photo Upload' : 'Upload Photo' }}
+            </button>
+            <button (click)="toggleUploadForm()" class="btn-add">
+              {{ showUploadForm ? 'Cancel Document Upload' : 'Upload Document' }}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Profile Content -->
-    <div class="content-grid">
-      <!-- Profile Details -->
+      <!-- Personal Info -->
       <div class="info-card">
         <div class="card-header">
-          <h2 class="card-title">Profile Details</h2>
+          <h2 class="card-title">Personal Information</h2>
+        </div>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Full Name</label>
+            <span>{{ formatUserName(user) || 'Not specified' }}</span>
+          </div>
+          <div class="info-item">
+            <label>Phone</label>
+            <span>{{ user.phone || 'Not specified' }}</span>
+          </div>
+          <div *ngIf="user.linkedInUrl" class="info-item">
+            <label>LinkedIn</label>
+            <a [href]="user.linkedInUrl" target="_blank" class="linkedin-link">Profile</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Professional Info -->
+      <div class="info-card">
+        <div class="card-header">
+          <h2 class="card-title">Professional Information</h2>
         </div>
         <div class="info-grid">
           <div class="info-item">
@@ -62,14 +109,6 @@
             <label>Research Area</label>
             <span>{{ user.researchArea || 'Not specified' }}</span>
           </div>
-          <div class="info-item">
-            <label>Phone</label>
-            <span>{{ user.phone || 'Not specified' }}</span>
-          </div>
-          <div *ngIf="user.linkedInUrl" class="info-item">
-            <label>LinkedIn</label>
-            <a [href]="user.linkedInUrl" target="_blank" class="linkedin-link">Profile</a>
-          </div>
         </div>
       </div>
 
@@ -83,63 +122,63 @@
             <div class="form-group">
               <label>First Name</label>
               <input formControlName="firstName" class="form-control" />
-              <div *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched" class="text-red-500 text-sm">
+              <div *ngIf="profileForm.get('firstName')?.invalid && profileForm.get('firstName')?.touched" class="error-text">
                 First name is required and must be at least 2 characters.
               </div>
             </div>
             <div class="form-group">
               <label>Last Name</label>
               <input formControlName="lastName" class="form-control" />
-              <div *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched" class="text-red-500 text-sm">
+              <div *ngIf="profileForm.get('lastName')?.invalid && profileForm.get('lastName')?.touched" class="error-text">
                 Last name is required and must be at least 2 characters.
               </div>
             </div>
             <div class="form-group">
               <label>Phone</label>
               <input formControlName="phone" class="form-control" />
-              <div *ngIf="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched" class="text-red-500 text-sm">
+              <div *ngIf="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched" class="error-text">
                 Valid phone number is required.
               </div>
             </div>
             <div class="form-group">
               <label>Grade</label>
               <input formControlName="grade" class="form-control" />
-              <div *ngIf="profileForm.get('grade')?.invalid && profileForm.get('grade')?.touched" class="text-red-500 text-sm">
+              <div *ngIf="profileForm.get('grade')?.invalid && profileForm.get('grade')?.touched" class="error-text">
                 Grade is required.
               </div>
             </div>
             <div class="form-group">
               <label>Institute</label>
               <input formControlName="institute" class="form-control" />
-              <div *ngIf="profileForm.get('institute')?.invalid && profileForm.get('institute')?.touched" class="text-red-500 text-sm">
+              <div *ngIf="profileForm.get('institute')?.invalid && profileForm.get('institute')?.touched" class="error-text">
                 Institute is required and must be at least 3 characters.
               </div>
             </div>
             <div class="form-group">
               <label>Last Diploma</label>
               <input formControlName="lastDiploma" class="form-control" />
-              <div *ngIf="profileForm.get('lastDiploma')?.invalid && profileForm.get('lastDiploma')?.touched" class="text-red-500 text-sm">
+              <div *ngIf="profileForm.get('lastDiploma')?.invalid && profileForm.get('lastDiploma')?.touched" class="error-text">
                 Last diploma is required.
               </div>
             </div>
             <div class="form-group full-width">
               <label>Research Area</label>
               <textarea formControlName="researchArea" class="form-control"></textarea>
-              <div *ngIf="profileForm.get('researchArea')?.invalid && profileForm.get('researchArea')?.touched" class="text-red-500 text-sm">
+              <div *ngIf="profileForm.get('researchArea')?.invalid && profileForm.get('researchArea')?.touched" class="error-text">
                 Research area is required and must be at least 10 characters.
               </div>
             </div>
             <div class="form-group full-width">
               <label>LinkedIn URL (optional)</label>
               <input formControlName="linkedInUrl" class="form-control" />
-              <div *ngIf="profileForm.get('linkedInUrl')?.invalid && profileForm.get('linkedInUrl')?.touched" class="text-red-500 text-sm">
+              <div *ngIf="profileForm.get('linkedInUrl')?.invalid && profileForm.get('linkedInUrl')?.touched" class="error-text">
                 Please enter a valid LinkedIn URL.
               </div>
             </div>
           </div>
           <div class="form-actions">
-            <button type="button" (click)="cancelEdit()" class="btn-secondary">Cancel</button>
-            <button type="submit" [disabled]="profileForm.invalid" class="btn-primary">Save</button>
+            <button type="button" (click)="cancelEdit()" class="btn-cancel">Cancel</button>
+            <button type="submit" [disabled]="profileForm.invalid" class="btn-save">Save</button>
           </div>
         </form>
       </div>
@@ -160,93 +199,8 @@
         </div>
       </div>
 
-      <!-- Document Upload Form -->
-      <div *ngIf="showUploadForm && isOwnProfile" class="info-card upload-form">
-        <div class="card-header">
-          <h2 class="card-title">Upload Document</h2>
-        </div>
-        <form [formGroup]="uploadForm" (ngSubmit)="onFileUpload()">
-          <div class="form-grid">
-            <div class="form-group">
-              <label>Document File</label>
-              <label class="file-upload-area" [ngClass]="{'has-file': selectedFile}">
-                <input type="file" accept=".pdf,.doc,.docx,.txt" (change)="onFileSelect($event)" class="file-input" />
-                <div class="upload-content">
-                  <span class="upload-icon">📄</span>
-                  <span class="upload-placeholder">{{ selectedFile ? selectedFile.name : 'Choose or drag a document' }}</span>
-                </div>
-              </label>
-            </div>
-            <div class="form-group">
-              <label>Title</label>
-              <input formControlName="title" class="form-control" />
-              <div *ngIf="uploadForm.get('title')?.invalid && uploadForm.get('title')?.touched" class="text-red-500 text-sm">
-                Title is required and must be at least 3 characters.
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Authors (comma-separated)</label>
-              <input formControlName="authors" class="form-control" />
-              <div *ngIf="uploadForm.get('authors')?.invalid && uploadForm.get('authors')?.touched" class="text-red-500 text-sm">
-                Authors are required.
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Affiliations (comma-separated)</label>
-              <input formControlName="affiliations" class="form-control" />
-              <div *ngIf="uploadForm.get('affiliations')?.invalid && uploadForm.get('affiliations')?.touched" class="text-red-500 text-sm">
-                Affiliations are required.
-              </div>
-            </div>
-            <div class="form-group">
-              <label>File Type</label>
-              <select formControlName="fileType" class="form-control">
-                <option value="" disabled>Select file type</option>
-                <option *ngFor="let type of fileTypeOptions" [value]="type">{{ type }}</option>
-                <option value="custom">Custom</option>
-              </select>
-              <div *ngIf="uploadForm.get('fileType')?.invalid && uploadForm.get('fileType')?.touched" class="text-red-500 text-sm">
-                File type is required.
-              </div>
-              <input *ngIf="uploadForm.get('fileType')?.value === 'custom'" [(ngModel)]="customFileType" [ngModelOptions]="{standalone: true}" placeholder="Enter custom file type" class="form-control mt-2" />
-            </div>
-            <div class="form-group">
-              <label>Publication Date</label>
-              <input formControlName="publicationDate" type="date" class="form-control" />
-              <div *ngIf="uploadForm.get('publicationDate')?.invalid && uploadForm.get('publicationDate')?.touched" class="text-red-500 text-sm">
-                Publication date is required.
-              </div>
-            </div>
-            <div class="form-group full-width">
-              <label>Abstract</label>
-              <textarea formControlName="abstractText" class="form-control"></textarea>
-              <div *ngIf="uploadForm.get('abstractText')?.invalid && uploadForm.get('abstractText')?.touched" class="text-red-500 text-sm">
-                Abstract is required and must be at least 50 characters.
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Keywords (comma-separated)</label>
-              <input formControlName="keywords" class="form-control" />
-              <div *ngIf="uploadForm.get('keywords')?.invalid && uploadForm.get('keywords')?.touched" class="text-red-500 text-sm">
-                Keywords are required.
-              </div>
-            </div>
-            <div class="form-group">
-              <label>DOI (optional)</label>
-              <input formControlName="doi" class="form-control" />
-            </div>
-          </div>
-          <div class="form-actions">
-            <button type="button" (click)="toggleUploadForm()" class="btn-secondary">Cancel</button>
-            <button type="submit" [disabled]="uploadForm.invalid || !selectedFile || isUploading" class="btn-primary">
-              {{ isUploading ? 'Uploading...' : 'Upload' }}
-            </button>
-          </div>
-        </form>
-      </div>
-
       <!-- Uploaded Documents -->
-      <div *ngIf="user.uploads?.length; else emptyState" class="uploads-card">
+      <div *ngIf="user.uploads?.length; else emptyDocuments" class="info-card">
         <div class="card-header">
           <h2 class="card-title">Uploaded Documents</h2>
         </div>
@@ -265,17 +219,89 @@
               </div>
             </div>
             <div class="doc-actions">
-              <button *ngIf="file.filename" (click)="downloadFile(file)" class="btn-download">
-                Download
-              </button>
+              <button *ngIf="file.filename" (click)="downloadFile(file)" class="btn-download">Download</button>
             </div>
           </div>
         </div>
       </div>
-      <ng-template #emptyState>
+      <ng-template #emptyDocuments>
         <div class="empty-state">
           <span class="empty-icon">📂</span>
           <p>No documents uploaded yet.</p>
+        </div>
+      </ng-template>
+
+      <!-- Enrolled Events -->
+      <div *ngIf="enrolledEvents?.length; else emptyEvents" class="projects-container">
+        <div class="card-header">
+          <h2 class="card-title">Enrolled Events</h2>
+        </div>
+        <div class="project-card" *ngFor="let event of enrolledEvents">
+          <img *ngIf="event.image" [src]="event.image" alt="{{ event.eventName }}">
+          <div class="project-status status-{{ event.status.toLowerCase() }}">{{ event.status }}</div>
+          <div class="project-date">{{ event.startDate | date:'mediumDate' }} - {{ event.endDate | date:'mediumDate' }}</div>
+          <div class="project-content">
+            <h3 class="project-title">{{ event.eventName }}</h3>
+            <p class="project-description">{{ event.description }}</p>
+            <div class="project-meta">
+              <div class="project-meta-item">
+                <span>Location:</span>
+                <span>{{ event.location }}</span>
+              </div>
+              <div class="project-meta-item">
+                <span>Participants:</span>
+                <span>{{ event.availablePlaces }} / {{ event.maxParticipants }}</span>
+              </div>
+              <div class="project-meta-item">
+                <span>Budget:</span>
+                <span>{{ event.budget | currency }}</span>
+              </div>
+            </div>
+            <div class="project-actions">
+              <a [routerLink]="['/event', event.id]" class="btn-info">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #emptyEvents>
+        <div class="empty-state">
+          <span class="empty-icon">🎉</span>
+          <p>No enrolled events yet.</p>
+        </div>
+      </ng-template>
+
+      <!-- Enrolled Projects -->
+      <div *ngIf="enrolledProjects?.length; else emptyProjects" class="projects-container">
+        <div class="card-header">
+          <h2 class="card-title">Enrolled Projects</h2>
+        </div>
+        <div class="project-card" *ngFor="let project of enrolledProjects">
+          <img *ngIf="project.image" [src]="project.image" alt="{{ project.projectName }}">
+          <div class="project-status status-{{ project.status.toLowerCase() }}">{{ project.status }}</div>
+          <div class="project-date">{{ project.startDate | date:'mediumDate' }} - {{ project.endDate | date:'mediumDate' }}</div>
+          <div class="project-content">
+            <h3 class="project-title">{{ project.projectName }}</h3>
+            <p class="project-description">{{ project.description }}</p>
+            <div class="project-meta">
+              <div class="project-meta-item">
+                <span>Team Members:</span>
+                <span>{{ project.availableSpots }} / {{ project.maxTeamMembers }}</span>
+              </div>
+              <div class="project-meta-item">
+                <span>Budget:</span>
+                <span>{{ project.budget | currency }}</span>
+              </div>
+            </div>
+            <div class="project-actions">
+              <a [routerLink]="['/project', project.id]" class="btn-info">View Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <ng-template #emptyProjects>
+        <div class="empty-state">
+          <span class="empty-icon">📊</span>
+          <p>No enrolled projects yet.</p>
         </div>
       </ng-template>
     </div>

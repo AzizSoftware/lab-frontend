@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
-import { UserService, User, FileDocument } from '../services/user-service.service';
+import { UserService, User, FileDocument, Project, Event } from '../services/user-service.service';
 import { FileService } from '../services/file-service.service';
 
 @Component({
@@ -17,6 +17,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   // User data
   user: User | null = null;
   isOwnProfile = false;
+  isLoggedIn = false;
+  
+  // Enrolled data
+  enrolledProjects: Project[] = [];
+  enrolledEvents: Event[] = [];
   
   // UI state
   editMode = false;
@@ -47,6 +52,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.isLoggedIn = this.userService.isLoggedIn();
     this.loadUserProfile();
     this.loadFileTypes();
     this.syncFileType();
@@ -133,10 +139,37 @@ export class ProfileComponent implements OnInit, OnDestroy {
         next: (user) => {
           this.user = user;
           this.populateProfileForm();
+          this.loadEnrolledData(email);
         },
         error: (error) => {
           console.error('Error loading user profile:', error);
           this.router.navigate(['/dashboard']);
+        }
+      });
+  }
+
+  private loadEnrolledData(email: string): void {
+    this.userService.getEnrolledProjects(email)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (projects) => {
+          this.enrolledProjects = projects;
+        },
+        error: (error) => {
+          console.error('Error loading enrolled projects:', error);
+          this.showErrorMessage('Failed to load enrolled projects.');
+        }
+      });
+
+    this.userService.getEnrolledEvents(email)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (events) => {
+          this.enrolledEvents = events;
+        },
+        error: (error) => {
+          console.error('Error loading enrolled events:', error);
+          this.showErrorMessage('Failed to load enrolled events.');
         }
       });
   }
@@ -361,6 +394,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.showErrorMessage('Failed to download file. Please try again.');
         }
       });
+  }
+
+  // Logout Method
+  logout(): void {
+    this.userService.logout();
+    this.isLoggedIn = false;
+    this.router.navigate(['/login']);
   }
 
   // Utility Methods

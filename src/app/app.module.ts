@@ -13,6 +13,8 @@ import { RouterModule } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
 import { SignupComponent } from './pages/signup/signup.component';
 import { FileComponent } from './pages/file/file.component';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,11 +32,13 @@ import { FileComponent } from './pages/file/file.component';
     AppRoutingModule,
     CommonModule,
     FormsModule,
+    MatSnackBarModule,
     ReactiveFormsModule, // ✅ should be here
     RouterModule.forRoot([]) // router enabled
   ],
   providers: [
-    provideHttpClient() 
+    provideHttpClient(),
+    provideAnimationsAsync() 
   ],
   bootstrap: [AppComponent]
 })

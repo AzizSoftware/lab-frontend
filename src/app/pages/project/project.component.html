@@ -4,32 +4,34 @@
       <h1>Our Projects</h1>
       <p>Explore our active, completed, and upcoming projects</p>
     </div>
+
     <nav class="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">
-            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8IS0tIEdyZWVuIGNvbXB1dGVyL3BpeGVsIGljb24gLS0+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8IS0tIEJsYWNrIGxpbmVzIC0tPg0KPHJlY3QgeD0iNTQiIHk9IjE1IiB3aWR0aD0iNCIgaGVpZ2h0PSI4IiBmaWxsPSIjMDAwIi8+DQo8cmVjdCB4PSI1NCIgeT0iMzciIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjwhLS0gVGV4dCAtLT4NCjx0ZXh0IHg9IjcwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzMzMyI+bGltdGljPC90ZXh0Pg0KPC9nPg0KPC9zdmc+" 
-                alt="LIMTIC" style="height: 40px; width: auto;">
-            </a>
-            <ul class="nav-menu">
-            <li><a routerLink="/home" class="nav-link" routerLinkActive="active">Home</a></li>
-            <li><a routerLink="/event" class="nav-link" routerLinkActive="active">Events</a></li>
-            <li><a routerLink="/project" class="nav-link" routerLinkActive="active">Projects</a></li>
-            <li><a routerLink="/file" class="nav-link" routerLinkActive="active">Files</a></li>
-            </ul>
-            <div class="auth-buttons" *ngIf="!isLoggedIn">
-            <a routerLink="/signup" class="nav-link" routerLinkActive="active">Sign Up</a>
-            </div>
-            <div class="auth-buttons" *ngIf="!isLoggedIn">
-            <a routerLink="/login" class="nav-link" routerLinkActive="active">Sign In</a>
-            </div>
-            <div class="auth-buttons" *ngIf="isLoggedIn">
-            <a routerLink="/profile" class="nav-link" routerLinkActive="active">Profile</a>
-            </div>
-            <div class="auth-buttons" *ngIf="isLoggedIn">
-            <a (click)="logout()" class="nav-link">Logout</a>
-            </div>
+      <div class="nav-container">
+        <a href="#" class="logo">
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSI1NCIgeT0iMTUiIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjxyZWN0IHg9IjU0IiB5PSIzNyIgd2lkdGg9IjQiIGhlaWdodD0iOCIgZmlsbD0iIzAwMCIvPg0KPHRleHQgeD0iNzAiIHk9IjQyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMzMzIj5saW10aWM8L3RleHQ+DQo8L2c+DQo8L3N2Zz4=" 
+               alt="LIMTIC" style="height: 40px; width: auto;">
+        </a>
+        <ul class="nav-menu">
+          <li><a routerLink="/home" class="nav-link" routerLinkActive="active">Home</a></li>
+          <li><a routerLink="/event" class="nav-link" routerLinkActive="active">Events</a></li>
+          <li><a routerLink="/project" class="nav-link" routerLinkActive="active">Projects</a></li>
+          <li><a routerLink="/file" class="nav-link" routerLinkActive="active">Files</a></li>
+        </ul>
+        <div class="auth-buttons" *ngIf="!isLoggedIn">
+          <a routerLink="/signup" class="nav-link" routerLinkActive="active">Sign Up</a>
         </div>
+        <div class="auth-buttons" *ngIf="!isLoggedIn">
+          <a routerLink="/login" class="nav-link" routerLinkActive="active">Sign In</a>
+        </div>
+        <div class="auth-buttons" *ngIf="isLoggedIn">
+          <a routerLink="/profile" class="nav-link" routerLinkActive="active">Profile</a>
+        </div>
+        <div class="auth-buttons" *ngIf="isLoggedIn">
+          <a (click)="logout()" class="nav-link">Logout</a>
+        </div>
+      </div>
     </nav>
+
     <div class="filter-section">
       <div class="search-filters">
         <div class="filter-group">
@@ -38,7 +40,7 @@
             type="text"
             id="search"
             [(ngModel)]="searchTerm"
-            (keyup)="applyFilters()"
+            (input)="applyFilters()"
             placeholder="Search by project name, status, or description..."
           />
         </div>
@@ -49,28 +51,26 @@
             [(ngModel)]="selectedProjectStatus"
             (change)="applyFilters()"
           >
-            <option value="">All Status</option>
+            <option value="">All Statuses</option>
             <option value="ACTIVE">Active</option>
             <option value="COMPLETED">Completed</option>
             <option value="NOT_STARTED">Not Started</option>
           </select>
         </div>
-        <div class="filter-group">
-          <label>&nbsp;</label>
-          <div class="add-event-container">
-            <button class="btn-add" (click)="openModal()">+ Add Project</button>
-          </div>
-        </div>
       </div>
     </div>
 
-    <div class="events-container" id="projectsContainer">
+    <div class="add-project-container">
+      <button *ngIf="isLoggedIn" class="btn-add" (click)="openModal()">+ Add Project</button>
+    </div>
+
+    <div class="projects-container">
       <div *ngIf="loading" class="loading-state">Loading projects...</div>
       <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
 
-      <div class="event-card" *ngFor="let project of filteredProjects">
+      <div class="project-card" *ngFor="let project of filteredProjects">
         <div
-          class="event-status"
+          class="project-status"
           [ngClass]="{
             'status-upcoming': project.status === 'NOT_STARTED',
             'status-ongoing': project.status === 'ACTIVE',
@@ -80,50 +80,50 @@
           {{ project.status | titlecase }}
         </div>
 
-        <img src="/project.jpg" />
+        <img src="/project.jpg" alt="{{ project.projectName }}" />
 
-        <div class="event-date">📅 {{ project.startDate | date: 'mediumDate' }}</div>
+        <div class="project-date">📅 {{ project.startDate | date: 'mediumDate' }} - {{ project.endDate | date: 'mediumDate' }}</div>
 
-        <div class="event-content">
-          <div class="event-title">{{ project.projectName }}</div>
-          <div class="event-description">{{ project.description }}</div>
+        <div class="project-content">
+          <div class="project-title">{{ project.projectName }}</div>
+          <div class="project-description">{{ project.description }}</div>
 
-          <div class="event-meta">
-            <div class="event-meta-item">
+          <div class="project-meta">
+            <div class="project-meta-item">
               <span>💰</span>
               <span>Budget: ${{ project.budget }}</span>
             </div>
-            <div class="event-meta-item">
+            <div class="project-meta-item">
               <span>👥</span>
-              <span>{{ project.teamMembers?.length || 0 }}/{{ project.maxTeamMembers || 0 }} team members</span>
+              <span>{{ project.teamMembers?.length || 0 }}/{{ project.maxTeamMembers }} team members ({{ project.availableSpots }} spots left)</span>
             </div>
           </div>
 
-          <div class="event-actions">
+          <div class="project-actions">
             <ng-container [ngSwitch]="project.status">
               <button
                 *ngSwitchCase="'NOT_STARTED'"
                 class="btn-register"
                 (click)="projectAction('Start', project.id!)"
-                [disabled]="!project.id"
+                [disabled]="!project.id || !isLoggedIn"
               >
                 Start Project
               </button>
               <button
                 *ngSwitchCase="'COMPLETED'"
                 class="btn-info"
-                (click)="projectAction('View', project.id!)"
+                (click)="projectAction('Details', project.id!)"
                 [disabled]="!project.id"
               >
                 View Details
               </button>
               <button
                 *ngSwitchDefault
-                class="btn-info"
+                class="btn-register"
                 (click)="projectAction('Join', project.id!)"
-                [disabled]="!project.id"
+                [disabled]="!project.id || !isLoggedIn || project.availableSpots === 0 || isUserEnrolled(project)"
               >
-                Join Project
+                {{ isUserEnrolled(project) ? 'Already Joined' : 'Join Project' }}
               </button>
             </ng-container>
 
@@ -134,13 +134,21 @@
             >
               Details
             </button>
+            <button
+              *ngIf="isLoggedIn"
+              class="btn-info"
+              (click)="deleteProject(project.id!)"
+              [disabled]="!project.id"
+            >
+              Delete
+            </button>
           </div>
         </div>
       </div>
 
       <div
         *ngIf="!loading && !errorMessage && filteredProjects.length === 0"
-        class="no-events-found"
+        class="no-projects-found"
       >
         No projects found matching your criteria.
       </div>
@@ -167,7 +175,12 @@
           name="projectName"
           placeholder="Enter project name"
           required
+          #projectName="ngModel"
+          [ngClass]="{'invalid': projectName.invalid && (projectName.dirty || projectName.touched)}"
         />
+        <div *ngIf="projectName.invalid && (projectName.dirty || projectName.touched)" class="error-text">
+          Project name is required
+        </div>
       </div>
       <div class="form-group">
         <label for="projectDescription">Description</label>
@@ -177,7 +190,12 @@
           name="description"
           placeholder="Describe the project..."
           required
+          #description="ngModel"
+          [ngClass]="{'invalid': description.invalid && (description.dirty || description.touched)}"
         ></textarea>
+        <div *ngIf="description.invalid && (description.dirty || description.touched)" class="error-text">
+          Description is required
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -188,7 +206,14 @@
             [(ngModel)]="newProject.budget"
             name="budget"
             placeholder="Enter budget"
+            min="0"
+            required
+            #budget="ngModel"
+            [ngClass]="{'invalid': budget.invalid && (budget.dirty || budget.touched)}"
           />
+          <div *ngIf="budget.invalid && (budget.dirty || budget.touched)" class="error-text">
+            Budget is required and must be a positive number
+          </div>
         </div>
         <div class="form-group">
           <label for="projectMaxTeam">Max Team Members</label>
@@ -198,7 +223,47 @@
             [(ngModel)]="newProject.maxTeamMembers"
             name="maxTeamMembers"
             placeholder="Max team members"
+            min="1"
+            required
+            #maxTeamMembers="ngModel"
+            [ngClass]="{'invalid': maxTeamMembers.invalid && (maxTeamMembers.dirty || maxTeamMembers.touched)}"
           />
+          <div *ngIf="maxTeamMembers.invalid && (maxTeamMembers.dirty || maxTeamMembers.touched)" class="error-text">
+            Max team members is required and must be at least 1
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="projectEndDate">End Date</label>
+        <input
+          type="date"
+          id="projectEndDate"
+          [(ngModel)]="newProject.endDate"
+          name="endDate"
+          required
+          #endDate="ngModel"
+          [ngClass]="{'invalid': endDate.invalid && (endDate.dirty || endDate.touched)}"
+        />
+        <div *ngIf="endDate.invalid && (endDate.dirty || endDate.touched)" class="error-text">
+          End date is required
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="projectStatus">Status</label>
+        <select
+          id="projectStatus"
+          [(ngModel)]="newProject.status"
+          name="status"
+          required
+          #status="ngModel"
+          [ngClass]="{'invalid': status.invalid && (status.dirty || status.touched)}"
+        >
+          <option value="ACTIVE">Active</option>
+          <option value="NOT_STARTED">Not Started</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+        <div *ngIf="status.invalid && (status.dirty || status.touched)" class="error-text">
+          Status is required
         </div>
       </div>
       <div class="modal-actions">

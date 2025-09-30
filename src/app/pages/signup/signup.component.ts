@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth-service.service';
+import { Router } from '@angular/router';   // 👈 import Router
 
 @Component({
   selector: 'app-signup',
@@ -11,7 +12,11 @@ export class SignupComponent {
   signupForm: FormGroup;
   message = '';
 
-  constructor(private fb: FormBuilder, private auth: AuthService) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router   // 👈 inject router
+  ) {
     this.signupForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -25,7 +30,8 @@ export class SignupComponent {
     this.auth.signup(this.signupForm.value).subscribe({
       next: (res: string) => {
         this.message = res;
-        // Navigation to /login handled by AuthService
+        // 👇 redirect to login page after successful signup
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         this.message = err.error || 'Signup failed';

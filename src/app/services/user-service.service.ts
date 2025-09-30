@@ -4,8 +4,8 @@ import { Observable, BehaviorSubject } from 'rxjs';
 
 export interface FileDocument {
   id: string;
-  filename?: string; // Optional to handle existing files
-  fileType?: string; // New field for file type
+  filename?: string;
+  fileType?: string;
   title?: string;
   authors?: string[];
   affiliations?: string[];
@@ -36,6 +36,38 @@ export interface User {
   researchArea: string;
   linkedInUrl?: string;
   uploads: FileDocument[];
+}
+
+export interface Project {
+  id?: string;
+  projectName: string;
+  description: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  budget: number;
+  maxTeamMembers: number;
+  availableSpots?: number;
+  image?: string;
+  imagePath?: string;
+  teamMembers?: string[];
+  createdAt?: string;
+}
+
+export interface Event {
+  id?: string;
+  eventName: string;
+  location: string;
+  budget: number;
+  maxParticipants: number;
+  availablePlaces?: number;
+  status: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  image?: string;
+  imagePath?: string;
+  enrolledUsers?: string[];
 }
 
 export interface LoginRequest {
@@ -186,6 +218,18 @@ export class UserService {
     return this.http.get<FileDocument[]>(`${this.baseUrl}/uploads/recent`, {
       headers: this.getAuthHeaders(),
       params: params
+    });
+  }
+
+  getEnrolledProjects(email: string): Observable<Project[]> {
+    return this.http.get<Project[]>(`${this.baseUrl}/${email}/enrolled-projects`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  getEnrolledEvents(email: string): Observable<Event[]> {
+    return this.http.get<Event[]>(`${this.baseUrl}/${email}/enrolled-events`, {
+      headers: this.getAuthHeaders()
     });
   }
 

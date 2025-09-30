@@ -1,6 +1,5 @@
-// src/app/services/project.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Project {
@@ -27,59 +26,63 @@ export class ProjectService {
 
   constructor(private http: HttpClient) {}
 
-  // CRUD
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    });
+  }
+
   getAllProjects(): Observable<Project[]> {
-    return this.http.get<Project[]>(this.apiUrl);
+    return this.http.get<Project[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
   getProjectById(id: string): Observable<Project> {
-    return this.http.get<Project>(`${this.apiUrl}/${id}`);
+    return this.http.get<Project>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 
   createProject(project: Project): Observable<Project> {
-    return this.http.post<Project>(this.apiUrl, project);
+    return this.http.post<Project>(this.apiUrl, project, { headers: this.getHeaders() });
   }
 
   updateProject(id: string, project: Project): Observable<Project> {
-    return this.http.put<Project>(`${this.apiUrl}/${id}`, project);
+    return this.http.put<Project>(`${this.apiUrl}/${id}`, project, { headers: this.getHeaders() });
   }
 
   deleteProject(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 
-  // Team management
   addTeamMember(projectId: string, userId: string): Observable<Project> {
-    return this.http.post<Project>(`${this.apiUrl}/${projectId}/addMember/${userId}`, {});
+    return this.http.post<Project>(`${this.apiUrl}/${projectId}/addMember/${userId}`, {}, { headers: this.getHeaders() });
   }
 
-  // Count
   countProjects(): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/count`);
+    return this.http.get<number>(`${this.apiUrl}/count`, { headers: this.getHeaders() });
   }
 
-  // Search / Filter
   findByName(name: string): Observable<Project[]> {
-    return this.http.get<Project[]>(`${this.apiUrl}/search/name?name=${name}`);
+    return this.http.get<Project[]>(`${this.apiUrl}/search/name?name=${name}`, { headers: this.getHeaders() });
   }
 
   findByStatus(status: string): Observable<Project[]> {
-    return this.http.get<Project[]>(`${this.apiUrl}/search/status?status=${status}`);
+    return this.http.get<Project[]>(`${this.apiUrl}/search/status?status=${status}`, { headers: this.getHeaders() });
   }
 
   findByBudget(min: number, max: number): Observable<Project[]> {
-    return this.http.get<Project[]>(`${this.apiUrl}/search/budget?min=${min}&max=${max}`);
+    return this.http.get<Project[]>(`${this.apiUrl}/search/budget?min=${min}&max=${max}`, { headers: this.getHeaders() });
   }
 
   findByStartDateAfter(start: string): Observable<Project[]> {
-    return this.http.get<Project[]>(`${this.apiUrl}/search/startAfter?start=${start}`);
+    return this.http.get<Project[]>(`${this.apiUrl}/search/startAfter?start=${start}`, { headers: this.getHeaders() });
   }
 
   findByEndDateBefore(end: string): Observable<Project[]> {
-    return this.http.get<Project[]>(`${this.apiUrl}/search/endBefore?end=${end}`);
+    return this.http.get<Project[]>(`${this.apiUrl}/search/endBefore?end=${end}`, { headers: this.getHeaders() });
   }
 
   findByDateRange(start: string, end: string): Observable<Project[]> {
-    return this.http.get<Project[]>(`${this.apiUrl}/search/dateRange?start=${start}&end=${end}`);
+    return this.http.get<Project[]>(`${this.apiUrl}/search/dateRange?start=${start}&end=${end}`, { headers: this.getHeaders() });
   }
 }

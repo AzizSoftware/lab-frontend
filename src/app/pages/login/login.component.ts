@@ -20,7 +20,7 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.invalid) return;
-
+    
     this.auth.login(this.loginForm.value).subscribe({
       next: () => {
         // Token storage and navigation handled by AuthService

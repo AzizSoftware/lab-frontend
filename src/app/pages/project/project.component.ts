@@ -1,7 +1,12 @@
-// src/app/pages/project/project.component.ts
 import { Component, OnInit } from '@angular/core';
-import { ProjectService,Project } from '../../services/project-service.service';
+import { ProjectService, Project } from '../../services/project-service.service';
 import { AuthService } from '../../services/auth-service.service';
+import { UserService, User } from '../../services/user-service.service';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { MatSnackBar
+  
+ } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-project',
@@ -9,6 +14,7 @@ import { AuthService } from '../../services/auth-service.service';
   styleUrls: ['./project.component.css']
 })
 export class ProjectComponent implements OnInit {
+  private destroy$ = new Subject<void>();
   isLoggedIn: boolean = false;
   projects: Project[] = [];
   filteredProjects: Project[] = [];
@@ -23,43 +29,69 @@ export class ProjectComponent implements OnInit {
     teamMembers: [],
     imagePath: 'assets/default-project.jpg'
   };
-
   searchTerm: string = '';
   selectedProjectStatus: string = '';
   loading: boolean = false;
   errorMessage: string = '';
   isModalOpen: boolean = false;
+  currentUserId: string | null = null;
 
-  constructor(private projectService: ProjectService,
-    private authService: AuthService
+  constructor(
+    private projectService: ProjectService,
+    private authService: AuthService,
+    private userService: UserService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
     this.loadProjects();
     this.isLoggedIn = this.authService.isLoggedIn();
+    if (this.isLoggedIn) {
+      const userEmail = this.userService.getUserEmail();
+      if (userEmail) {
+        this.userService.getUserByEmail(userEmail)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (user: User) => {
+              this.currentUserId = user.id;
+            },
+            error: (err) => {
+              console.error('Failed to fetch user ID', err);
+              this.errorMessage = 'Failed to load user data';
+            }
+          });
+      }
+    }
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   logout(): void {
     this.authService.logout();
-    this.isLoggedIn = false;  // Update local flag after logout
+    this.isLoggedIn = false;
+    this.currentUserId = null;
   }
 
-  // Load all projects
   loadProjects(): void {
     this.loading = true;
-    this.projectService.getAllProjects().subscribe({
-      next: (data) => {
-        this.projects = data;
-        this.filteredProjects = [...this.projects];
-        this.loading = false;
-      },
-      error: (err) => {
-        this.errorMessage = 'Failed to load projects';
-        this.loading = false;
-      }
-    });
+    this.projectService.getAllProjects()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.projects = data;
+          this.filteredProjects = [...this.projects];
+          this.loading = false;
+        },
+        error: (err) => {
+          this.errorMessage = 'Failed to load projects';
+          this.loading = false;
+        }
+      });
   }
 
-  // Filter projects by search term and status
   applyFilters(): void {
     this.filteredProjects = this.projects.filter(project => {
       const matchesSearch = this.searchTerm
@@ -76,7 +108,6 @@ export class ProjectComponent implements OnInit {
     });
   }
 
-  // Modal controls
   openModal(): void {
     this.isModalOpen = true;
   }
@@ -86,21 +117,23 @@ export class ProjectComponent implements OnInit {
     this.resetForm();
   }
 
-  // Create a new project
   onSubmit(): void {
     this.newProject.startDate = new Date().toISOString();
-    this.projectService.createProject(this.newProject).subscribe({
-      next: () => {
-        this.loadProjects();
-        this.closeModal();
-      },
-      error: (err) => {
-        console.error('Failed to create project', err);
-      }
-    });
+    this.projectService.createProject(this.newProject)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.loadProjects();
+          this.closeModal();
+          this.showSuccessMessage('Project created successfully');
+        },
+        error: (err) => {
+          console.error('Failed to create project', err);
+          this.errorMessage = 'Failed to create project';
+        }
+      });
   }
 
-  // Reset the project form
   resetForm(): void {
     this.newProject = {
       projectName: '',
@@ -115,37 +148,96 @@ export class ProjectComponent implements OnInit {
     };
   }
 
-  // Handle action buttons
   projectAction(action: string, id: string): void {
     const project = this.projects.find(p => p.id === id);
-    if (!project) return;
+    if (!project) {
+      this.errorMessage = 'Project not found';
+      return;
+    }
 
     switch (action) {
       case 'Start':
         project.status = 'ACTIVE';
-        this.projectService.updateProject(project.id!, project).subscribe(() => this.applyFilters());
+        this.projectService.updateProject(project.id!, project)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              this.applyFilters();
+              this.showSuccessMessage(`Project ${project.projectName} started`);
+            },
+            error: (err) => {
+              console.error('Failed to update project', err);
+              this.errorMessage = 'Failed to start project';
+            }
+          });
         break;
       case 'Join':
-        if (!project.teamMembers) project.teamMembers = [];
-        project.teamMembers.push('New Member'); // Replace with actual user ID
-        this.projectService.updateProject(project.id!, project).subscribe(() => this.applyFilters());
+        const userEmail = this.userService.getUserEmail();
+        if (!userEmail) {
+          this.errorMessage = 'Please log in to join a project';
+          return;
+        }
+        this.userService.getUserByEmail(userEmail)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (user: User) => {
+              this.projectService.addTeamMember(project.id!, user.id)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe({
+                  next: (updatedProject) => {
+                    this.loadProjects();
+                    this.showSuccessMessage(`Successfully joined ${project.projectName}`);
+                  },
+                  error: (err) => {
+                    console.error('Failed to join project', err);
+                    this.errorMessage = err.error || 'Failed to join project. You may already be enrolled or no spots are available.';
+                  }
+                });
+            },
+            error: (err) => {
+              console.error('Failed to fetch user', err);
+              this.errorMessage = 'Failed to fetch user data';
+            }
+          });
         break;
-      case 'View':
       case 'Details':
-        alert(`Project Details:\n\n${project.projectName}\nStatus: ${project.status}\nBudget: $${project.budget}`);
+        this.snackBar.open(`Project Details:\n${project.projectName}\nStatus: ${project.status}\nBudget: $${project.budget}\nSpots: ${project.availableSpots}/${project.maxTeamMembers}`, 'Close', {
+          duration: 5000,
+          verticalPosition: 'top'
+        });
         break;
       default:
         console.warn('Unknown action', action);
     }
   }
 
-  // Delete project
   deleteProject(id: string): void {
     if (!confirm('Are you sure you want to delete this project?')) return;
 
-    this.projectService.deleteProject(id).subscribe({
-    next: () => this.loadProjects(),
-    error: (err: any) => console.error('Failed to delete project', err)
-  });
+    this.projectService.deleteProject(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.loadProjects();
+          this.showSuccessMessage('Project deleted successfully');
+        },
+        error: (err) => {
+          console.error('Failed to delete project', err);
+          this.errorMessage = 'Failed to delete project';
+        }
+      });
+  }
+
+  isUserEnrolled(project: Project): boolean {
+    if (!this.currentUserId || !project.teamMembers) return false;
+    return project.teamMembers.includes(this.currentUserId);
+  }
+
+  showSuccessMessage(message: string): void {
+    this.errorMessage = '';
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      verticalPosition: 'top'
+    });
   }
 }
