@@ -1,178 +1,341 @@
-// src/app/pages/event/event.component.ts
-
 import { Component, OnInit } from '@angular/core';
 import { EventService, Event } from '../../services/event-service.service';
-import { forkJoin, Observable, of } from 'rxjs'; // Import forkJoin and of
-import { switchMap, catchError } from 'rxjs/operators'; // Import operators
+import { UserService } from '../../services/user-service.service';
 import { AuthService } from '../../services/auth-service.service';
-
+import { forkJoin, Observable, of } from 'rxjs';
+import { switchMap, catchError, takeUntil } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Subject } from 'rxjs';
+import { User } from '../../services/models';
 @Component({
   selector: 'app-event',
   templateUrl: './event.component.html',
   styleUrls: ['./event.component.css']
 })
 export class EventComponent implements OnInit {
-  isLoggedIn: boolean = false;  
+  private destroy$ = new Subject<void>();
+  isLoggedIn: boolean = false;
+  isAdmin: boolean = false;
+  isPermanent: boolean = false;
+  isUser: boolean = false;
+  currentUserId: string | null = null;
   events: Event[] = [];
-  // 1. ADDED: Array to hold the events displayed after filtering
-  filteredEvents: Event[] = []; 
+  filteredEvents: Event[] = [];
   loading = true;
   errorMessage = '';
 
-  // Properties for two-way data binding ([(ngModel)])
   searchTerm: string = '';
-  // NOTE: Assuming "Event Type" is an internal classification not directly on the model or service as a filter.
-  // We'll keep it for the UI but won't use it in the backend service call unless you add a 'findByType' endpoint.
-  selectedEventType: string = ''; 
+  selectedEventType: string = '';
   selectedEventStatus: string = '';
 
-  // Property for the modal state
-  isModalOpen: boolean = false; 
-
+  isModalOpen: boolean = false;
+  editEvent: Event | null = null;
 
   newEvent: Event = {
     eventName: '',
     location: '',
     budget: 0,
     maxParticipants: 0,
-    status: 'UPCOMING',   // default status
-    startDate: new Date().toISOString(),
-    endDate: new Date().toISOString(),
+    status: 'UPCOMING',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: new Date().toISOString().split('T')[0],
     description: '',
-    
     enrolledUsers: []
   };
-  
+
   constructor(
     private eventService: EventService,
-    private authService: AuthService   // <-- added 'private' so it's a class property
+    private userService: UserService,
+    private authService: AuthService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
-    this.fetchEvents();
     this.isLoggedIn = this.authService.isLoggedIn();
+    if (this.isLoggedIn) {
+      this.isAdmin = this.userService.isAdmin();
+      this.isPermanent = this.userService.isPermanent();
+      this.isUser = this.userService.isUser();
+      const userEmail = this.userService.getUserEmail();
+      if (userEmail) {
+        this.userService.getUserByEmail(userEmail)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (user: User) => {
+              this.currentUserId = user.id;
+            },
+            error: (err) => {
+              console.error('Failed to fetch user ID', err);
+              this.errorMessage = 'Failed to load user data';
+              this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+            }
+          });
+      }
+    }
+    this.fetchEvents();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   logout(): void {
     this.authService.logout();
-    this.isLoggedIn = false;  // Update local flag after logout
+    this.isLoggedIn = false;
+    this.isAdmin = false;
+    this.isPermanent = false;
+    this.isUser = false;
+    this.currentUserId = null;
   }
 
   fetchEvents(): void {
     this.loading = true;
-    this.eventService.getAllEvents().subscribe({
-      next: (data) => {
-        this.events = data;
-        // 2. IMPORTANT: Initialize filteredEvents with all events on load
-        this.filteredEvents = data; 
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.errorMessage = 'Failed to load events';
-        this.loading = false;
-      }
-    });
+    this.eventService.getAllEvents()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.events = data;
+          this.filteredEvents = [...this.events];
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error(err);
+          this.errorMessage = 'Failed to load events';
+          this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+          this.loading = false;
+        }
+      });
   }
 
-  // 3. ADDED: Method to handle all filtering logic
   applyFilters(): void {
     this.loading = true;
     this.errorMessage = '';
-    
-    // Determine which service calls to make
-    const searchByName$ = this.searchTerm 
-      ? this.eventService.findByName(this.searchTerm) 
-      : of(this.events); // Use all fetched events if no name search
 
-    const searchByStatus$ = this.selectedEventStatus 
-      ? this.eventService.findByStatus(this.selectedEventStatus) 
-      : of(this.events); // Use all fetched events if no status filter
+    const searchByName$ = this.searchTerm
+      ? this.eventService.findByName(this.searchTerm)
+      : of(this.events);
 
-    // Combine the Observable results
-    // NOTE: This logic assumes that the service endpoints work in isolation.
-    // A robust solution usually involves filtering the *local* 'events' array 
-    // or using a combined backend endpoint (e.g., /search?name=X&status=Y).
-    // For simplicity, we'll demonstrate using 'findByName' and falling back to a local filter if both are set.
-    
-    // Strategy: First filter by name, then filter that result locally by status.
-    searchByName$.pipe(
-      // The map ensures we catch the server-side result (or the local events array)
-      catchError(err => {
-        this.errorMessage = 'Search failed.';
+    searchByName$
+      .pipe(
+        switchMap((nameFilteredEvents) =>
+          this.selectedEventStatus
+            ? this.eventService.findByStatus(this.selectedEventStatus).pipe(
+                switchMap((statusFilteredEvents) =>
+                  of(
+                    nameFilteredEvents.filter((event) =>
+                      statusFilteredEvents.some((e) => e.id === event.id)
+                    )
+                  )
+                )
+              )
+            : of(nameFilteredEvents)
+        ),
+        catchError((err) => {
+          this.errorMessage = 'Search failed.';
+          this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+          this.loading = false;
+          return of([]);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((finalEvents) => {
+        let filteredEvents = finalEvents;
+        if (this.selectedEventType) {
+          filteredEvents = filteredEvents.filter(event =>
+            event.description.toLowerCase().includes(this.selectedEventType.toLowerCase())
+          );
+        }
+        this.filteredEvents = filteredEvents;
         this.loading = false;
-        return of([]); // Return an empty array on error
-      })
-    ).subscribe((nameFilteredEvents) => {
-      let finalEvents = nameFilteredEvents;
+        if (this.filteredEvents.length === 0) {
+          this.errorMessage = 'No events found matching your criteria.';
+          this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+        } else {
+          this.errorMessage = '';
+        }
+      });
 
-      // Local filter for status (since you only have a single-parameter findByStatus endpoint)
-      if (this.selectedEventStatus && nameFilteredEvents.length > 0) {
-        finalEvents = nameFilteredEvents.filter(event => 
-          event.status.toLowerCase() === this.selectedEventStatus.toLowerCase()
-        );
-      }
-      
-      this.filteredEvents = finalEvents;
-      this.loading = false;
-      
-      if (this.filteredEvents.length === 0) {
-        this.errorMessage = 'No events found matching your criteria.';
-      } else {
-        this.errorMessage = '';
-      }
-    });
-
-    // Resetting to all events if both filters are cleared
-    if (!this.searchTerm && !this.selectedEventStatus) {
-      this.filteredEvents = this.events;
+    if (!this.searchTerm && !this.selectedEventStatus && !this.selectedEventType) {
+      this.filteredEvents = [...this.events];
       this.errorMessage = '';
       this.loading = false;
     }
   }
 
-  // Method to open the event creation modal.
-  openModal(): void {
+  openModal(event?: Event): void {
     this.isModalOpen = true;
+    if (event) {
+      this.editEvent = { ...event };
+      this.newEvent = { ...event };
+    } else {
+      this.editEvent = null;
+      this.newEvent = {
+        eventName: '',
+        location: '',
+        budget: 0,
+        maxParticipants: 0,
+        status: 'UPCOMING',
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: new Date().toISOString().split('T')[0],
+        description: '',
+        enrolledUsers: []
+      };
+    }
   }
 
-  // Method to close the event creation modal.
   closeModal(): void {
     this.isModalOpen = false;
+    this.editEvent = null;
+    this.newEvent = {
+      eventName: '',
+      location: '',
+      budget: 0,
+      maxParticipants: 0,
+      status: 'UPCOMING',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date().toISOString().split('T')[0],
+      description: '',
+      enrolledUsers: []
+    };
   }
 
   onSubmit(): void {
-    this.eventService.createEvent(this.newEvent).subscribe({
-      next: (createdEvent) => {
-        // add it locally
-        this.events.push(createdEvent);
-        this.filteredEvents.push(createdEvent);
-
-        // reset form
-        this.newEvent = {
-          eventName: '',
-          location: '',
-          budget: 0,
-          maxParticipants: 0,
-          status: 'UPCOMING',
-          startDate: new Date().toISOString(),
-          endDate: new Date().toISOString(),
-          description: '',
-          enrolledUsers: []
-        };
-
-        this.closeModal();
-      },
-      error: (err) => {
-        console.error('Failed to create event:', err);
-        this.errorMessage = 'Failed to create event';
-      }
-    });
+    if (!this.isAdmin) {
+      this.errorMessage = 'Unauthorized to create/edit event';
+      this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+      return;
+    }
+    const action = this.editEvent
+      ? this.eventService.updateEvent(this.editEvent.id!, this.newEvent)
+      : this.eventService.createEvent(this.newEvent);
+    action
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (event) => {
+          if (this.editEvent) {
+            const index = this.events.findIndex(e => e.id === event.id);
+            this.events[index] = event;
+            this.filteredEvents[index] = event;
+          } else {
+            this.events.push(event);
+            this.filteredEvents.push(event);
+          }
+          this.snackBar.open(`Event ${this.editEvent ? 'updated' : 'created'} successfully`, 'Close', { duration: 3000 });
+          this.closeModal();
+        },
+        error: (err) => {
+          this.errorMessage = `Failed to ${this.editEvent ? 'update' : 'create'} event: ${err.error?.message || 'Unknown error'}`;
+          this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+        }
+      });
   }
 
-  // Method to handle various actions
+  isUserEnrolled(event: Event): boolean {
+    if (!this.currentUserId || !event.enrolledUsers) return false;
+    return event.enrolledUsers.includes(this.currentUserId);
+  }
+
   eventAction(action: string, id: string | number | undefined): void {
-    console.log(`Action: ${action} requested for Event ID: ${id}`);
-    // Future logic: routing, register service call, etc.
+    if (!id) {
+      this.errorMessage = 'Invalid event ID';
+      this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+      return;
+    }
+    const eventId = id.toString();
+    const event = this.events.find(e => e.id === eventId);
+    if (!event) {
+      this.errorMessage = 'Event not found';
+      this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+      return;
+    }
+
+    switch (action) {
+      case 'Register':
+        if (!this.isLoggedIn) {
+          this.errorMessage = 'Please log in to register for an event';
+          this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+          return;
+        }
+        if (!this.isPermanent && !this.isAdmin) {
+          this.errorMessage = 'Unauthorized to enroll';
+          this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+          return;
+        }
+        const userEmail = this.userService.getUserEmail();
+        if (!userEmail) {
+          this.errorMessage = 'User email not found';
+          this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+          return;
+        }
+        this.userService.getUserByEmail(userEmail)
+          .pipe(
+            switchMap((user: User) =>
+              this.eventService.enrollUser(eventId, user.id).pipe(
+                takeUntil(this.destroy$)
+              )
+            ),
+            catchError((err) => {
+              this.errorMessage = err.error?.message || 'Enrollment failed';
+              this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+              return of(null);
+            }),
+            takeUntil(this.destroy$)
+          )
+          .subscribe({
+            next: (updatedEvent) => {
+              if (updatedEvent) {
+                const index = this.events.findIndex(e => e.id === eventId);
+                this.events[index] = updatedEvent;
+                this.filteredEvents[index] = updatedEvent;
+                this.snackBar.open(`Successfully enrolled in ${event.eventName}`, 'Close', { duration: 3000 });
+              }
+            },
+            error: (err) => {
+              this.errorMessage = err.error?.message || 'Failed to fetch user data';
+              this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+            }
+          });
+        break;
+      case 'Details':
+        this.snackBar.open(`Event Details:\n${event.eventName}\nStatus: ${event.status}\nLocation: ${event.location}\nBudget: $${event.budget}\nParticipants: ${event.enrolledUsers?.length || 0}/${event.maxParticipants}`, 'Close', {
+          duration: 5000,
+          verticalPosition: 'top'
+        });
+        break;
+      case 'Join Event':
+      case 'View Materials':
+        console.log(`Action: ${action} for Event ID: ${eventId}`);
+        // Add specific logic if needed
+        break;
+      case 'Edit':
+        if (this.isAdmin) {
+          this.openModal(event);
+        } else {
+          this.errorMessage = 'Unauthorized to edit';
+          this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+        }
+        break;
+      case 'Delete':
+        if (this.isAdmin) {
+          this.eventService.deleteEvent(eventId)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: () => {
+                this.events = this.events.filter((e) => e.id !== eventId);
+                this.filteredEvents = this.filteredEvents.filter((e) => e.id !== eventId);
+                this.snackBar.open('Event deleted successfully', 'Close', { duration: 3000 });
+              },
+              error: (err) => {
+                this.errorMessage = `Failed to delete event: ${err.error?.message || 'Unknown error'}`;
+                this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+              }
+            });
+        } else {
+          this.errorMessage = 'Unauthorized to delete';
+          this.snackBar.open(this.errorMessage, 'Close', { duration: 3000 });
+        }
+        break;
+    }
   }
 }

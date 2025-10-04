@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http'; // Added HttpParams
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Event {
@@ -10,7 +10,7 @@ export interface Event {
   maxParticipants: number;
   availablePlaces?: number;
   status: string;
-  startDate: string; // Using string for date/time consistency with backend
+  startDate: string;
   endDate: string;
   description: string;
   image?: string;
@@ -22,75 +22,79 @@ export interface Event {
   providedIn: 'root'
 })
 export class EventService {
-  // Respecting the port you provided in your code snippet
   private apiUrl = 'http://localhost:8087/api/events';
 
   constructor(private http: HttpClient) {}
 
-  // -------------------- CRUD Endpoints --------------------
+  private getHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    });
+  }
 
   getAllEvents(): Observable<Event[]> {
-    return this.http.get<Event[]>(this.apiUrl);
+    return this.http.get<Event[]>(this.apiUrl, { headers: this.getHeaders() });
   }
 
   getEventById(id: string): Observable<Event> {
-    return this.http.get<Event>(`${this.apiUrl}/${id}`);
+    return this.http.get<Event>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 
   createEvent(event: Event): Observable<Event> {
-    return this.http.post<Event>(this.apiUrl, event);
+    return this.http.post<Event>(this.apiUrl, event, { headers: this.getHeaders() });
   }
 
   updateEvent(id: string, event: Event): Observable<Event> {
-    return this.http.put<Event>(`${this.apiUrl}/${id}`, event);
+    return this.http.put<Event>(`${this.apiUrl}/${id}`, event, { headers: this.getHeaders() });
   }
 
   deleteEvent(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getHeaders() });
   }
 
   enrollUser(eventId: string, userId: string): Observable<Event> {
-    return this.http.post<Event>(`${this.apiUrl}/${eventId}/enroll/${userId}`, {});
+    console.log(`Enrolling user ${userId} in event ${eventId}`);
+    return this.http.post<Event>(`${this.apiUrl}/${eventId}/enroll/${userId}`, {}, { headers: this.getHeaders() });
   }
 
   getUpcomingEvents(): Observable<Event[]> {
-    return this.http.get<Event[]>(`${this.apiUrl}/upcoming`);
+    return this.http.get<Event[]>(`${this.apiUrl}/upcoming`, { headers: this.getHeaders() });
   }
 
-  // -------------------- NEW: Search & Filter Endpoints --------------------
-  
   findByName(name: string): Observable<Event[]> {
     const params = new HttpParams().set('name', name);
-    return this.http.get<Event[]>(`${this.apiUrl}/search/name`, { params });
+    return this.http.get<Event[]>(`${this.apiUrl}/search/name`, { params, headers: this.getHeaders() });
   }
 
   findByLocation(location: string): Observable<Event[]> {
     const params = new HttpParams().set('location', location);
-    return this.http.get<Event[]>(`${this.apiUrl}/search/location`, { params });
+    return this.http.get<Event[]>(`${this.apiUrl}/search/location`, { params, headers: this.getHeaders() });
   }
 
   findByStatus(status: string): Observable<Event[]> {
     const params = new HttpParams().set('status', status);
-    return this.http.get<Event[]>(`${this.apiUrl}/search/status`, { params });
+    return this.http.get<Event[]>(`${this.apiUrl}/search/status`, { params, headers: this.getHeaders() });
   }
 
   findByBudget(min: number, max: number): Observable<Event[]> {
     const params = new HttpParams().set('min', min.toString()).set('max', max.toString());
-    return this.http.get<Event[]>(`${this.apiUrl}/search/budget`, { params });
+    return this.http.get<Event[]>(`${this.apiUrl}/search/budget`, { params, headers: this.getHeaders() });
   }
 
   findByStartDateAfter(start: string): Observable<Event[]> {
     const params = new HttpParams().set('start', start);
-    return this.http.get<Event[]>(`${this.apiUrl}/search/startAfter`, { params });
+    return this.http.get<Event[]>(`${this.apiUrl}/search/startAfter`, { params, headers: this.getHeaders() });
   }
 
   findByEndDateBefore(end: string): Observable<Event[]> {
     const params = new HttpParams().set('end', end);
-    return this.http.get<Event[]>(`${this.apiUrl}/search/endBefore`, { params });
+    return this.http.get<Event[]>(`${this.apiUrl}/search/endBefore`, { params, headers: this.getHeaders() });
   }
 
   findByDateRange(start: string, end: string): Observable<Event[]> {
     const params = new HttpParams().set('start', start).set('end', end);
-    return this.http.get<Event[]>(`${this.apiUrl}/search/dateRange`, { params });
+    return this.http.get<Event[]>(`${this.apiUrl}/search/dateRange`, { params, headers: this.getHeaders() });
   }
 }

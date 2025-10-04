@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { FileService } from '../../services/file-service.service';
-import { UserService, FileDocument } from '../../services/user-service.service';
+import { UserService } from '../../services/user-service.service';
 import { AuthService } from '../../services/auth-service.service';
 import { forkJoin, Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
+import { FileDocument } from '../../services/models';
 
 @Component({
   selector: 'app-file',

@@ -1,12 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ProjectService, Project } from '../../services/project-service.service';
 import { AuthService } from '../../services/auth-service.service';
-import { UserService, User } from '../../services/user-service.service';
+import { UserService } from '../../services/user-service.service';
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { MatSnackBar
-  
- } from '@angular/material/snack-bar';
+import { MatSnackBar} from '@angular/material/snack-bar';
+import { User } from '../../services/models';
 
 @Component({
   selector: 'app-project',

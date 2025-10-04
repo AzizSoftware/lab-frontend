@@ -3,8 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
-import { UserService, User, FileDocument, Project, Event } from '../services/user-service.service';
+import {  User, FileDocument, Project, Event } from '../services/models';
 import { FileService } from '../services/file-service.service';
+import { UserService } from '../services/user-service.service';
 
 @Component({
   selector: 'app-profile',

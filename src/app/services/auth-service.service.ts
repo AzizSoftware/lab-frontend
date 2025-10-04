@@ -2,25 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Router } from '@angular/router';
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface SignupRequest {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  phone: string;
-  grade: string;
-  institute: string;
-  lastDiploma: string;
-  researchArea: string;
-  linkedInUrl?: string;
-}
+import { JwtDecoderService } from './jwt-decoder-service.service';
+import { LoginRequest, SignupRequest } from './models';
 
 @Injectable({
   providedIn: 'root'
@@ -28,42 +11,58 @@ export interface SignupRequest {
 export class AuthService {
   private baseUrl = 'http://localhost:8087/api/users';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private jwtDecoder: JwtDecoderService
+  ) {}
 
-  // ----------------- LOGIN -----------------
   login(data: LoginRequest): Observable<string> {
     return this.http.post(this.baseUrl + '/login', data, { responseType: 'text' }).pipe(
-      tap(token => {
-        localStorage.setItem('authToken', token); // Save JWT token
-        localStorage.setItem('userEmail', data.email); // Save user email
-        this.router.navigate(['/home']); // Redirect to home
+      tap({
+        next: (token) => {
+          console.log('Login successful, token:', token);
+          localStorage.setItem('authToken', token);
+          localStorage.setItem('userEmail', data.email);
+          this.router.navigate(['/home']);
+        },
+        error: (err) => {
+          console.error('Login failed:', err);
+        }
       })
     );
   }
 
-  // ----------------- SIGNUP -----------------
   signup(data: SignupRequest): Observable<string> {
     return this.http.post(this.baseUrl + '/signup', data, { responseType: 'text' }).pipe(
-      tap(res => {
-        console.log(res); // Log backend message
-        this.router.navigate(['/login']); // Redirect to login page
+      tap({
+        next: () => {
+          console.log('Signup successful');
+          this.router.navigate(['/login']);
+        },
+        error: (err) => {
+          console.error('Signup failed:', err);
+        }
       })
     );
   }
 
-  // ----------------- LOGOUT -----------------
   logout(): void {
+    console.log('Logging out, removing authToken and userEmail');
     localStorage.removeItem('authToken');
     localStorage.removeItem('userEmail');
     this.router.navigate(['/login']);
   }
 
-  // ----------------- TOKEN -----------------
   getToken(): string | null {
-    return localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken');
+    console.log('getToken:', token);
+    return token;
   }
 
   isLoggedIn(): boolean {
-    return this.getToken() !== null;
+    const isLoggedIn = !!this.getToken();
+    console.log('isLoggedIn:', isLoggedIn);
+    return isLoggedIn;
   }
 }

@@ -1,105 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
-
-export interface FileDocument {
-  id: string;
-  filename?: string;
-  fileType?: string;
-  title?: string;
-  authors?: string[];
-  affiliations?: string[];
-  publicationDate?: string;
-  abstractText?: string;
-  keywords?: string[];
-  doi?: string;
-  ownerId?: string;
-  uploadedAt?: string;
-}
-
-export interface User {
-  id: string;
-  email: string;
-  password?: string;
-  role: string;
-  status: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  phone: string;
-  imageUrl?: string;
-  createdAt: string;
-  updatedAt: string;
-  grade: string;
-  institute: string;
-  lastDiploma: string;
-  researchArea: string;
-  linkedInUrl?: string;
-  uploads: FileDocument[];
-}
-
-export interface Project {
-  id?: string;
-  projectName: string;
-  description: string;
-  status: string;
-  startDate: string;
-  endDate: string;
-  budget: number;
-  maxTeamMembers: number;
-  availableSpots?: number;
-  image?: string;
-  imagePath?: string;
-  teamMembers?: string[];
-  createdAt?: string;
-}
-
-export interface Event {
-  id?: string;
-  eventName: string;
-  location: string;
-  budget: number;
-  maxParticipants: number;
-  availablePlaces?: number;
-  status: string;
-  startDate: string;
-  endDate: string;
-  description: string;
-  image?: string;
-  imagePath?: string;
-  enrolledUsers?: string[];
-}
-
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface SignupRequest {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
-  phone: string;
-  grade: string;
-  institute: string;
-  lastDiploma: string;
-  researchArea: string;
-  linkedInUrl?: string;
-}
+import { BehaviorSubject, Observable } from 'rxjs';
+import { JwtDecoderService } from './jwt-decoder-service.service';
+import { FileDocument, User, Project, Event, LoginRequest, SignupRequest } from './models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-  private baseUrl = "http://localhost:8087/api/users";
+  private baseUrl = 'http://localhost:8087/api/users';
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {
-    const token = this.getToken();
-    if (token) {
+  constructor(
+    private http: HttpClient,
+    private jwtDecoderService: JwtDecoderService
+  ) {
+    if (this.isLoggedIn()) {
       this.loadCurrentUser();
     }
   }
@@ -109,9 +26,7 @@ export class UserService {
   }
 
   login(credentials: LoginRequest): Observable<string> {
-    return this.http.post(`${this.baseUrl}/login`, credentials, { 
-      responseType: 'text' 
-    });
+    return this.http.post(`${this.baseUrl}/login`, credentials, { responseType: 'text' });
   }
 
   logout(): void {
@@ -133,11 +48,27 @@ export class UserService {
   }
 
   getUserEmail(): string | null {
-    return localStorage.getItem('userEmail');
+    return this.jwtDecoderService.getEmailFromToken() || localStorage.getItem('userEmail');
   }
 
   isLoggedIn(): boolean {
-    return this.getToken() !== null;
+    return !!this.getToken();
+  }
+
+  isAdmin(): boolean {
+    return this.jwtDecoderService.getRoleFromToken() === 'ADMIN';
+  }
+
+  isPermanent(): boolean {
+    return this.jwtDecoderService.getRoleFromToken() === 'PERMANENT';
+  }
+
+  isUser(): boolean {
+    return this.jwtDecoderService.getRoleFromToken() === 'USER';
+  }
+
+  getCurrentUserId(): string | null {
+    return this.jwtDecoderService.getUserIdFromToken();
   }
 
   getAllUsers(): Observable<User[]> {
@@ -167,8 +98,8 @@ export class UserService {
   }
 
   uploadFile(
-    email: string, 
-    file: File, 
+    email: string,
+    file: File,
     fileMetadata: {
       title: string;
       authors: string[];
@@ -255,9 +186,7 @@ export class UserService {
     if (!email) {
       throw new Error('No user logged in');
     }
-    return this.http.put<User>(`${this.baseUrl}/${email}`, userData, {
-      headers: this.getAuthHeaders()
-    });
+    return this.updateUser(email, userData);
   }
 
   private getAuthHeaders(): HttpHeaders {
@@ -296,7 +225,8 @@ export class UserService {
     switch (role.toUpperCase()) {
       case 'SUPER_ADMIN': return 'Super Admin';
       case 'ADMIN': return 'Administrator';
-      case 'USER': return 'Researcher';
+      case 'PERMANENT': return 'Researcher';
+      case 'USER': return 'Visitor';
       default: return role;
     }
   }

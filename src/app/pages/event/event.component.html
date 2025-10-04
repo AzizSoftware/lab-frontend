@@ -1,146 +1,169 @@
 <div class="main-content">
-    <div class="container">
-        <div class="page-header">
-            <h1>Research Events & Conferences</h1>
-            <p>Join our academic events, workshops, conferences, and research presentations</p>
-        </div>
-        <nav class="navbar">
-        <div class="nav-container">
-            <a href="#" class="logo">
-            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8IS0tIEdyZWVuIGNvbXB1dGVyL3BpeGVsIGljb24gLS0+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8IS0tIEJsYWNrIGxpbmVzIC0tPg0KPHJlY3QgeD0iNTQiIHk9IjE1IiB3aWR0aD0iNCIgaGVpZ2h0PSI4IiBmaWxsPSIjMDAwIi8+DQo8cmVjdCB4PSI1NCIgeT0iMzciIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjwhLS0gVGV4dCAtLT4NCjx0ZXh0IHg9IjcwIiB5PSI0MiIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjMwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzMzMyI+bGltdGljPC90ZXh0Pg0KPC9nPg0KPC9zdmc+" 
-                alt="LIMTIC" style="height: 40px; width: auto;">
-            </a>
-            <ul class="nav-menu">
-            <li><a routerLink="/home" class="nav-link" routerLinkActive="active">Home</a></li>
-            <li><a routerLink="/event" class="nav-link" routerLinkActive="active">Events</a></li>
-            <li><a routerLink="/project" class="nav-link" routerLinkActive="active">Projects</a></li>
-            <li><a routerLink="/file" class="nav-link" routerLinkActive="active">Files</a></li>
-            </ul>
-            <div class="auth-buttons" *ngIf="!isLoggedIn">
-            <a routerLink="/signup" class="nav-link" routerLinkActive="active">Sign Up</a>
-            </div>
-            <div class="auth-buttons" *ngIf="!isLoggedIn">
-            <a routerLink="/login" class="nav-link" routerLinkActive="active">Sign In</a>
-            </div>
-            <div class="auth-buttons" *ngIf="isLoggedIn">
-            <a routerLink="/profile" class="nav-link" routerLinkActive="active">Profile</a>
-            </div>
-            <div class="auth-buttons" *ngIf="isLoggedIn">
-            <a (click)="logout()" class="nav-link">Logout</a>
-            </div>
-        </div>
-    </nav>
-        <div class="filter-section">
-            <div class="search-filters">
-                <div class="filter-group">
-                    <label for="search">Search Events</label>
-                    <input type="text" id="search" [(ngModel)]="searchTerm" (keyup)="applyFilters()" placeholder="Search by title, location, or topic...">
-                </div>
-                <div class="filter-group">
-                    <label for="eventType">Event Type</label>
-                    <select id="eventType" [(ngModel)]="selectedEventType" (change)="applyFilters()">
-                        <option value="">All Types</option>
-                        <option value="conference">Conference</option>
-                        <option value="workshop">Workshop</option>
-                        <option value="seminar">Seminar</option>
-                        <option value="symposium">Symposium</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label for="eventStatus">Status</label>
-                    <select id="eventStatus" [(ngModel)]="selectedEventStatus" (change)="applyFilters()">
-                        <option value="">All Status</option>
-                        <option value="upcoming">Upcoming</option>
-                        <option value="ongoing">Ongoing</option>
-                        <option value="completed">Completed</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>&nbsp;</label>
-                    <div class="add-event-container">
-                        <button class="btn-add" (click)="openModal()">+ Add Event</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="events-container" id="eventsContainer">
-            <div *ngIf="loading" class="loading-state">Loading events...</div>
-            <div *ngIf="errorMessage" class="error-state">{{ errorMessage }}</div>
-
-            <div class="event-card" *ngFor="let event of filteredEvents">
-                <div 
-                    class="event-status" 
-                    [ngClass]="{
-                        'status-upcoming': event.status === 'upcoming',
-                        'status-ongoing': event.status === 'ongoing',
-                        'status-completed': event.status === 'completed'
-                    }">
-                    {{ event.status | titlecase }} 
-                </div>
-                
-                <img src="/event-test.webp">
-                
-                <div class="event-date">
-                    📅 {{ event.startDate }} at 
-                </div>
-                
-                <div class="event-content">
-                    <div class="event-title">{{ event.eventName }}</div>
-                    <div class="event-description">{{ event.description }}</div>
-                    
-                    <div class="event-meta">
-                        <div class="event-meta-item">
-                            <span>🏛️</span>
-                            <span>{{ event.location }}</span>
-                        </div>
-                        <div class="event-meta-item">
-                            <span>👥</span>
-                            <span>{{ event.availablePlaces || 0 }}/{{ event.maxParticipants }} registered</span> 
-                        </div>
-                        <div class="event-meta-item">
-                            <span>📋</span>
-                            <span>{{ event.eventName | uppercase }}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="event-actions">
-                        <ng-container [ngSwitch]="event.status">
-                            <button 
-                                *ngSwitchCase="'upcoming'" 
-                                class="btn-register" 
-                                (click)="eventAction('Register', event.id)">
-                                Register
-                            </button>
-                            <button 
-                                *ngSwitchCase="'completed'" 
-                                class="btn-info" 
-                                (click)="eventAction('View Materials', event.id)">
-                                View Materials
-                            </button>
-                            <button 
-                                *ngSwitchDefault 
-                                class="btn-info" 
-                                (click)="eventAction('Join Event', event.id)">
-                                Join Event
-                            </button>
-                        </ng-container>
-                        
-                        <button class="btn-info" (click)="eventAction('Details', event.id)">Details</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div *ngIf="!loading && !errorMessage && filteredEvents.length === 0" class="no-events-found">
-                No events found matching your criteria.
-            </div>
-        </div>
+  <div class="container">
+    <div class="page-header">
+      <h1>Research Events & Conferences</h1>
+      <p>Join our academic events, workshops, conferences, and research presentations</p>
     </div>
-</div>
-<!-- add event modal-->
-<!-- Add Event Button -->
-<div class="add-event-container">
-  <button class="btn-add" (click)="openModal()">+ Add Event</button>
+    <nav class="navbar">
+      <div class="nav-container">
+        <a href="#" class="logo">
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSI1NCIgeT0iMTUiIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjxyZWN0IHg9IjU0IiB5PSIzNyIgd2lkdGg9IjQiIGhlaWdodD0iOCIgZmlsbD0iIzAwMCIvPg0KPHRleHQgeD0iNzAiIHk9IjQyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMzMzIj5saW10aWM8L3RleHQ+DQo8L2c+DQo8L3N2Zz4=" 
+            alt="LIMTIC" style="height: 40px; width: auto;">
+        </a>
+        <ul class="nav-menu">
+          <li><a routerLink="/home" class="nav-link" routerLinkActive="active">Home</a></li>
+          <li><a routerLink="/event" class="nav-link" routerLinkActive="active">Events</a></li>
+          <li><a routerLink="/project" class="nav-link" routerLinkActive="active">Projects</a></li>
+          <li><a routerLink="/file" class="nav-link" routerLinkActive="active">Files</a></li>
+        </ul>
+        <div class="auth-buttons" *ngIf="!isLoggedIn">
+          <a routerLink="/signup" class="nav-link" routerLinkActive="active">Sign Up</a>
+        </div>
+        <div class="auth-buttons" *ngIf="!isLoggedIn">
+          <a routerLink="/login" class="nav-link" routerLinkActive="active">Sign In</a>
+        </div>
+        <div class="auth-buttons" *ngIf="isLoggedIn">
+          <a routerLink="/profile" class="nav-link" routerLinkActive="active">Profile</a>
+        </div>
+        <div class="auth-buttons" *ngIf="isLoggedIn">
+          <a (click)="logout()" class="nav-link">Logout</a>
+        </div>
+      </div>
+    </nav>
+    <div class="filter-section">
+      <div class="search-filters">
+        <div class="filter-group">
+          <label for="search">Search Events</label>
+          <input type="text" id="search" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Search by title, location, or topic...">
+        </div>
+        <div class="filter-group">
+          <label for="eventType">Event Type</label>
+          <select id="eventType" [(ngModel)]="selectedEventType" (change)="applyFilters()">
+            <option value="">All Types</option>
+            <option value="conference">Conference</option>
+            <option value="workshop">Workshop</option>
+            <option value="seminar">Seminar</option>
+            <option value="symposium">Symposium</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="eventStatus">Status</label>
+          <select id="eventStatus" [(ngModel)]="selectedEventStatus" (change)="applyFilters()">
+            <option value="">All Status</option>
+            <option value="UPCOMING">Upcoming</option>
+            <option value="ONGOING">Ongoing</option>
+            <option value="COMPLETED">Completed</option>
+          </select>
+        </div>
+        <div class="filter-group" *ngIf="isAdmin">
+          <label>&nbsp;</label>
+          <div class="add-event-container">
+            <button class="btn-add" (click)="openModal()">+ Add Event</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-state" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <div class="events-container" id="eventsContainer">
+      <div *ngIf="loading" class="loading-state">Loading events...</div>
+
+      <div class="event-card" *ngFor="let event of filteredEvents">
+        <div 
+          class="event-status" 
+          [ngClass]="{
+            'status-upcoming': event.status === 'UPCOMING',
+            'status-ongoing': event.status === 'ONGOING',
+            'status-completed': event.status === 'COMPLETED'
+          }">
+          {{ event.status | titlecase }} 
+        </div>
+        
+        <img *ngIf="event.image" [src]="event.image" alt="{{ event.eventName }}" />
+        <img *ngIf="!event.image" src="/event-test.webp" alt="{{ event.eventName }}" />
+        
+        <div class="event-date">
+          📅 {{ event.startDate | date:'mediumDate' }} - {{ event.endDate | date:'mediumDate' }}
+        </div>
+        
+        <div class="event-content">
+          <div class="event-title">{{ event.eventName }}</div>
+          <div class="event-description">{{ event.description }}</div>
+          
+          <div class="event-meta">
+            <div class="event-meta-item">
+              <span>🏛️</span>
+              <span>{{ event.location }}</span>
+            </div>
+            <div class="event-meta-item">
+              <span>👥</span>
+              <span>{{ event.enrolledUsers?.length || 0 }}/{{ event.maxParticipants }} registered ({{ event.availablePlaces || 0 }} spots left)</span>
+            </div>
+            <div class="event-meta-item">
+              <span>💰</span>
+              <span>{{ event.budget | currency }}</span>
+            </div>
+          </div>
+          
+          <div class="event-actions">
+            <ng-container [ngSwitch]="event.status">
+              <ng-container *ngSwitchCase="'UPCOMING'">
+                <button 
+                  *ngIf="isPermanent || isAdmin"
+                  class="btn-register" 
+                  (click)="eventAction('Register', event.id!)"
+                  [disabled]="!event.id || !isLoggedIn || event.availablePlaces === 0 || isUserEnrolled(event)">
+                  {{ isUserEnrolled(event) ? 'Already Enrolled' : 'Register' }}
+                </button>
+              </ng-container>
+              <ng-container *ngSwitchCase="'COMPLETED'">
+                <button 
+                  class="btn-info" 
+                  (click)="eventAction('View Materials', event.id!)"
+                  [disabled]="!event.id">
+                  View Materials
+                </button>
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                <button 
+                  class="btn-info" 
+                  (click)="eventAction('Join Event', event.id!)"
+                  [disabled]="!event.id">
+                  Join Event
+                </button>
+              </ng-container>
+            </ng-container>
+            
+            <button 
+              class="btn-info" 
+              (click)="eventAction('Details', event.id!)"
+              [disabled]="!event.id">
+              Details
+            </button>
+            <button 
+              *ngIf="isAdmin" 
+              class="btn-add" 
+              (click)="eventAction('Edit', event.id!)"
+              [disabled]="!event.id">
+              Edit
+            </button>
+            <button 
+              *ngIf="isAdmin" 
+              class="btn-cancel" 
+              (click)="eventAction('Delete', event.id!)"
+              [disabled]="!event.id">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="!loading && !errorMessage && filteredEvents.length === 0" class="no-events-found">
+        No events found matching your criteria.
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal Overlay -->
@@ -150,12 +173,11 @@
 <div class="modal" *ngIf="isModalOpen" (click)="$event.stopPropagation()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2>Create New Event</h2>
+      <h2>{{ editEvent ? 'Edit Event' : 'Create New Event' }}</h2>
       <button class="close-btn" (click)="closeModal()">&times;</button>
     </div>
 
     <form (ngSubmit)="onSubmit()" #eventForm="ngForm" class="modal-body">
-      <!-- Title -->
       <div class="form-group">
         <label for="eventTitle">Event Title</label>
         <input
@@ -165,10 +187,14 @@
           name="eventName"
           placeholder="Enter event title"
           required
+          #eventName="ngModel"
+          [ngClass]="{'invalid': eventName.invalid && (eventName.dirty || eventName.touched)}"
         />
+        <div *ngIf="eventName.invalid && (eventName.dirty || eventName.touched)" class="error-text">
+          Event title is required
+        </div>
       </div>
 
-      <!-- Description -->
       <div class="form-group">
         <label for="eventDescription">Description</label>
         <textarea
@@ -177,10 +203,14 @@
           name="description"
           placeholder="Describe the event..."
           required
+          #description="ngModel"
+          [ngClass]="{'invalid': description.invalid && (description.dirty || description.touched)}"
         ></textarea>
+        <div *ngIf="description.invalid && (description.dirty || description.touched)" class="error-text">
+          Description is required
+        </div>
       </div>
 
-      <!-- Location & Capacity -->
       <div class="form-row">
         <div class="form-group">
           <label for="eventLocation">Location</label>
@@ -191,7 +221,12 @@
             name="location"
             placeholder="Event venue"
             required
+            #location="ngModel"
+            [ngClass]="{'invalid': location.invalid && (location.dirty || location.touched)}"
           />
+          <div *ngIf="location.invalid && (location.dirty || location.touched)" class="error-text">
+            Location is required
+          </div>
         </div>
         <div class="form-group">
           <label for="eventCapacity">Capacity</label>
@@ -201,18 +236,94 @@
             [(ngModel)]="newEvent.maxParticipants"
             name="maxParticipants"
             placeholder="Maximum attendees"
+            required
+            min="1"
+            #maxParticipants="ngModel"
+            [ngClass]="{'invalid': maxParticipants.invalid && (maxParticipants.dirty || maxParticipants.touched)}"
           />
+          <div *ngIf="maxParticipants.invalid && (maxParticipants.dirty || maxParticipants.touched)" class="error-text">
+            Capacity is required and must be at least 1
+          </div>
         </div>
       </div>
 
-      <!-- Actions -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="eventStartDate">Start Date</label>
+          <input
+            type="date"
+            id="eventStartDate"
+            [(ngModel)]="newEvent.startDate"
+            name="startDate"
+            required
+            #startDate="ngModel"
+            [ngClass]="{'invalid': startDate.invalid && (startDate.dirty || startDate.touched)}"
+          />
+          <div *ngIf="startDate.invalid && (startDate.dirty || startDate.touched)" class="error-text">
+            Start date is required
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="eventEndDate">End Date</label>
+          <input
+            type="date"
+            id="eventEndDate"
+            [(ngModel)]="newEvent.endDate"
+            name="endDate"
+            required
+            #endDate="ngModel"
+            [ngClass]="{'invalid': endDate.invalid && (endDate.dirty || endDate.touched)}"
+          />
+          <div *ngIf="endDate.invalid && (endDate.dirty || endDate.touched)" class="error-text">
+            End date is required
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="eventBudget">Budget</label>
+        <input
+          type="number"
+          id="eventBudget"
+          [(ngModel)]="newEvent.budget"
+          name="budget"
+          placeholder="Event budget"
+          required
+          min="0"
+          #budget="ngModel"
+          [ngClass]="{'invalid': budget.invalid && (budget.dirty || budget.touched)}"
+        />
+        <div *ngIf="budget.invalid && (budget.dirty || budget.touched)" class="error-text">
+          Budget is required and must be a positive number
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="eventStatus">Status</label>
+        <select
+          id="eventStatus"
+          [(ngModel)]="newEvent.status"
+          name="status"
+          required
+          #status="ngModel"
+          [ngClass]="{'invalid': status.invalid && (status.dirty || status.touched)}"
+        >
+          <option value="UPCOMING">Upcoming</option>
+          <option value="ONGOING">Ongoing</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+        <div *ngIf="status.invalid && (status.dirty || status.touched)" class="error-text">
+          Status is required
+        </div>
+      </div>
+
       <div class="modal-actions">
         <button
           type="submit"
           class="btn-save"
           [disabled]="!eventForm.valid"
         >
-          Create Event
+          {{ editEvent ? 'Update Event' : 'Create Event' }}
         </button>
         <button type="button" class="btn-cancel" (click)="closeModal()">
           Cancel
