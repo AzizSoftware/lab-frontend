@@ -11,6 +11,7 @@ export interface FileDocument {
   doi?: string;
   ownerId?: string;
   uploadedAt?: string;
+  ranking?: string;
 }
 
 export interface User {
@@ -64,6 +65,7 @@ export interface Event {
   image?: string;
   imagePath?: string;
   enrolledUsers?: string[];
+  createdAt?: string;
 }
 
 export interface LoginRequest {
@@ -83,4 +85,10 @@ export interface SignupRequest {
   lastDiploma: string;
   researchArea: string;
   linkedInUrl?: string;
+}
+export enum RoleEnum {
+  SUPER_ADMIN = 'SUPER_ADMIN',
+  ADMIN = 'ADMIN',
+  PERMANENT = 'PERMANENT',
+  USER = 'USER'
 }

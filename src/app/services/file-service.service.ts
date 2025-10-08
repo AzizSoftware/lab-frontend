@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
-import { FileDocument,User } from './models';
+import { FileDocument, User } from './models';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,13 @@ export class FileService {
   private fileTypesUrl = 'http://localhost:8087/api/file-types';
 
   constructor(private http: HttpClient) {}
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('authToken');
+    return new HttpHeaders({
+      Authorization: token ? `Bearer ${token}` : ''
+    });
+  }
 
   getAllFiles(): Observable<FileDocument[]> {
     return this.http.get<FileDocument[]>(this.apiUrl, { headers: this.getAuthHeaders() });
@@ -57,6 +64,16 @@ export class FileService {
     return this.http.get<FileDocument[]>(`${this.apiUrl}/search/author`, { headers: this.getAuthHeaders(), params });
   }
 
+  findByType(type: string): Observable<FileDocument[]> {
+    const params = new HttpParams().set('type', type);
+    return this.http.get<FileDocument[]>(`${this.apiUrl}/search/type`, { headers: this.getAuthHeaders(), params });
+  }
+
+  findByRank(rank: string): Observable<FileDocument[]> {
+    const params = new HttpParams().set('rank', rank);
+    return this.http.get<FileDocument[]>(`${this.apiUrl}/search/ranking`, { headers: this.getAuthHeaders(), params });
+  }
+
   findByDateAfter(date: string): Observable<FileDocument[]> {
     const params = new HttpParams().set('date', date);
     return this.http.get<FileDocument[]>(`${this.apiUrl}/search/dateAfter`, { headers: this.getAuthHeaders(), params });
@@ -80,14 +97,20 @@ export class FileService {
       formData.append('doi', metadata.doi);
     }
     formData.append('fileType', metadata.fileType || 'other');
+    if (metadata.ranking) {
+      formData.append('ranking', metadata.ranking);
+    }
 
     return this.http.post<User>(`${this.userApiUrl}/${email}/uploads`, formData, { headers: this.getAuthHeaders() });
   }
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
-    return new HttpHeaders({
-      Authorization: token ? `Bearer ${token}` : ''
-    });
+  updateFile(id: string, updatedMetadata: Partial<FileDocument>): Observable<FileDocument> {
+    // Note: The Spring Boot controller uses @RequestBody for PUT /api/files/{id}, 
+    // so we send the updatedMetadata object directly as JSON.
+    return this.http.put<FileDocument>(
+      `${this.apiUrl}/${id}`, 
+      updatedMetadata, 
+      { headers: this.getAuthHeaders() }
+    );
   }
 }

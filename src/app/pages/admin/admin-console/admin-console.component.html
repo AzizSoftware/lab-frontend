@@ -1,0 +1,395 @@
+<div class="admin-console">
+  <div class="container">
+    <div class="section-title">
+      <h2>ADMIN CONSOLE</h2>
+      <p>Manage projects, events, users, and files for the LIMTIC Laboratory</p>
+    </div>
+    <mat-tab-group mat-align-tabs="center" class="admin-tabs">
+      <!-- Projects Tab -->
+      <mat-tab label="Projects">
+        <div class="tab-content">
+          <h3>Manage Projects</h3>
+          <button mat-raised-button color="primary" (click)="openProjectModal()">Add New Project</button>
+          <table mat-table [dataSource]="projects" class="mat-elevation-z8">
+            <ng-container matColumnDef="projectName">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let project">{{ project.projectName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="description">
+              <th mat-header-cell *matHeaderCellDef>Description</th>
+              <td mat-cell *matCellDef="let project">{{ project.description }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let project">{{ project.status }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let project">
+                <button mat-icon-button (click)="openProjectModal(project)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteProject(project.id)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="projectColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: projectColumns;"></tr>
+          </table>
+        </div>
+      </mat-tab>
+      <!-- Events Tab -->
+      <mat-tab label="Events">
+        <div class="tab-content">
+          <h3>Manage Events</h3>
+          <button mat-raised-button color="primary" (click)="openEventModal()">Add New Event</button>
+          <table mat-table [dataSource]="events" class="mat-elevation-z8">
+            <ng-container matColumnDef="eventName">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let event">{{ event.eventName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="startDate">
+              <th mat-header-cell *matHeaderCellDef>Start Date</th>
+              <td mat-cell *matCellDef="let event">{{ event.startDate | date:'MMM dd, yyyy' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let event">{{ event.status }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let event">
+                <button mat-icon-button (click)="openEventModal(event)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="deleteEvent(event.id)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="eventColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: eventColumns;"></tr>
+          </table>
+        </div>
+      </mat-tab>
+      <!-- Users Tab -->
+      <mat-tab label="Users">
+        <div class="tab-content">
+          <h3>Manage Users</h3>
+          <button mat-raised-button color="primary" (click)="openUserModal()">Add New User</button>
+          <table mat-table [dataSource]="users" class="mat-elevation-z8">
+            <ng-container matColumnDef="username">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let user">{{ user.firstName + ' ' + user.lastName }}</td>
+            </ng-container>
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>Email</th>
+              <td mat-cell *matCellDef="let user">{{ user.email }}</td>
+            </ng-container>
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef>Role</th>
+              <td mat-cell *matCellDef="let user">{{ user.role }}</td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let user">{{ user.status }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let user">
+                <button mat-icon-button (click)="openUserModal(user)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button (click)="approveUser(user.email)" *ngIf="user.status === 'PENDING'">
+                  <mat-icon>check</mat-icon>
+                </button>
+                <button mat-icon-button color="warn" (click)="declineUser(user.email)" *ngIf="user.status === 'PENDING'">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="userColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: userColumns;"></tr>
+          </table>
+        </div>
+      </mat-tab>
+      <!-- Files Tab -->
+      <mat-tab label="Files">
+        <div class="tab-content">
+          <h3>Manage Files</h3>
+          <button mat-raised-button color="primary" (click)="openFileModal()">Add New File</button>
+          <table mat-table [dataSource]="files" class="mat-elevation-z8">
+            <ng-container matColumnDef="title">
+              <th mat-header-cell *matHeaderCellDef>Title</th>
+              <td mat-cell *matCellDef="let file">{{ file.title }}</td>
+            </ng-container>
+            <ng-container matColumnDef="authors">
+              <th mat-header-cell *matHeaderCellDef>Authors</th>
+              <td mat-cell *matCellDef="let file">{{ file.authors?.join(', ') }}</td>
+            </ng-container>
+            <ng-container matColumnDef="fileType">
+              <th mat-header-cell *matHeaderCellDef>Type</th>
+              <td mat-cell *matCellDef="let file">{{ file.fileType }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let file">
+                <button mat-icon-button (click)="openFileModal(file)">
+                  <mat-icon>edit</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="fileColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: fileColumns;"></tr>
+          </table>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</div>
+
+<!-- Project Modal Overlay -->
+<div class="modal-overlay" *ngIf="isProjectModalOpen" (click)="closeProjectModal()"></div>
+
+<!-- Project Modal -->
+<div class="modal" *ngIf="isProjectModalOpen" (click)="$event.stopPropagation()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ selectedProject ? 'Edit Project' : 'Add New Project' }}</h2>
+      <button class="close" (click)="closeProjectModal()">&times;</button>
+    </div>
+    <form [formGroup]="projectForm" (ngSubmit)="saveProject()" class="modal-body">
+      <div class="form-group">
+        <label for="projectName">Project Name</label>
+        <input type="text" id="projectName" formControlName="projectName" required>
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" formControlName="status" required>
+          <option value="PLANNED">Planned</option>
+          <option value="ONGOING">Ongoing</option>
+          <option value="COMPLETED">Completed</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" formControlName="startDate" required>
+      </div>
+      <div class="form-group">
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" formControlName="endDate" required>
+      </div>
+      <div class="form-group">
+        <label for="budget">Budget</label>
+        <input type="number" id="budget" formControlName="budget" required min="1">
+      </div>
+      <div class="form-group">
+        <label for="maxTeamMembers">Max Team Members</label>
+        <input type="number" id="maxTeamMembers" formControlName="maxTeamMembers" required min="1">
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn-submit" [disabled]="projectForm.invalid">
+          {{ selectedProject ? 'Update Project' : 'Create Project' }}
+        </button>
+        <button type="button" class="btn-cancel" (click)="closeProjectModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Event Modal Overlay -->
+<div class="modal-overlay" *ngIf="isEventModalOpen" (click)="closeEventModal()"></div>
+
+<!-- Event Modal -->
+<div class="modal" *ngIf="isEventModalOpen" (click)="$event.stopPropagation()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ selectedEvent ? 'Edit Event' : 'Add New Event' }}</h2>
+      <button class="close" (click)="closeEventModal()">&times;</button>
+    </div>
+    <form [formGroup]="eventForm" (ngSubmit)="saveEvent()" class="modal-body">
+      <div class="form-group">
+        <label for="eventName">Event Name</label>
+        <input type="text" id="eventName" formControlName="eventName" required>
+      </div>
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" formControlName="location" required>
+      </div>
+      <div class="form-group">
+        <label for="budget">Budget</label>
+        <input type="number" id="budget" formControlName="budget" required min="1">
+      </div>
+      <div class="form-group">
+        <label for="maxParticipants">Max Participants</label>
+        <input type="number" id="maxParticipants" formControlName="maxParticipants" required min="1">
+      </div>
+      <div class="form-group">
+        <label for="availablePlaces">Available Places</label>
+        <input type="number" id="availablePlaces" formControlName="availablePlaces" required min="0">
+      </div>
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" formControlName="status" required>
+          <option value="PLANNED">Planned</option>
+          <option value="ONGOING">Ongoing</option>
+          <option value="FINISHED">Finished</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="startDate">Start Date</label>
+        <input type="date" id="startDate" formControlName="startDate" required>
+      </div>
+      <div class="form-group">
+        <label for="endDate">End Date</label>
+        <input type="date" id="endDate" formControlName="endDate" required>
+      </div>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" formControlName="description" required></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn-submit" [disabled]="eventForm.invalid">
+          {{ selectedEvent ? 'Update Event' : 'Create Event' }}
+        </button>
+        <button type="button" class="btn-cancel" (click)="closeEventModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- User Modal Overlay -->
+<div class="modal-overlay" *ngIf="isUserModalOpen" (click)="closeUserModal()"></div>
+
+<!-- User Modal -->
+<div class="modal" *ngIf="isUserModalOpen" (click)="$event.stopPropagation()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ selectedUser ? 'Edit User' : 'Add New User' }}</h2>
+      <button class="close" (click)="closeUserModal()">&times;</button>
+    </div>
+    <form [formGroup]="userForm" (ngSubmit)="saveUser()" class="modal-body">
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" formControlName="firstName" required>
+      </div>
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" formControlName="lastName" required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" formControlName="email" required>
+      </div>
+      <div class="form-group" *ngIf="!selectedUser">
+        <label for="password">Password</label>
+        <input type="password" id="password" formControlName="password" required>
+      </div>
+      <div class="form-group">
+        <label for="role">Role</label>
+        <select id="role" formControlName="role" required>
+          <option value="SUPER_ADMIN">Super Admin</option>
+          <option value="ADMIN">Admin</option>
+          <option value="PERMANENT">Permanent</option>
+          <option value="USER">User</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="status">Status</label>
+        <select id="status" formControlName="status" required>
+          <option value="APPROVED">Approved</option>
+          <option value="PENDING">Pending</option>
+          <option value="DECLINED">Declined</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="dateOfBirth">Date of Birth</label>
+        <input type="date" id="dateOfBirth" formControlName="dateOfBirth" required>
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone</label>
+        <input type="text" id="phone" formControlName="phone" required>
+      </div>
+      <div class="form-group">
+        <label for="grade">Grade</label>
+        <input type="text" id="grade" formControlName="grade" required>
+      </div>
+      <div class="form-group">
+        <label for="institute">Institute</label>
+        <input type="text" id="institute" formControlName="institute" required>
+      </div>
+      <div class="form-group">
+        <label for="lastDiploma">Last Diploma</label>
+        <input type="text" id="lastDiploma" formControlName="lastDiploma" required>
+      </div>
+      <div class="form-group">
+        <label for="researchArea">Research Area</label>
+        <input type="text" id="researchArea" formControlName="researchArea" required>
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn-submit" [disabled]="userForm.invalid">
+          {{ selectedUser ? 'Update User' : 'Create User' }}
+        </button>
+        <button type="button" class="btn-cancel" (click)="closeUserModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- File Modal Overlay -->
+<div class="modal-overlay" *ngIf="isFileModalOpen" (click)="closeFileModal()"></div>
+
+<!-- File Modal -->
+<div class="modal" *ngIf="isFileModalOpen" (click)="$event.stopPropagation()">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>{{ selectedFile ? 'Edit File' : 'Add New File' }}</h2>
+      <button class="close" (click)="closeFileModal()">&times;</button>
+    </div>
+    <form [formGroup]="fileForm" (ngSubmit)="saveFile()" class="modal-body">
+      <div class="form-group" *ngIf="!selectedFile">
+        <label for="fileUpload">File</label>
+        <input type="file" id="fileUpload" (change)="onFileChange($event)" required>
+      </div>
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" formControlName="title" required>
+      </div>
+      <div class="form-group">
+        <label for="authors">Authors</label>
+        <input type="text" id="authors" formControlName="authors" required>
+      </div>
+      <div class="form-group">
+        <label for="affiliations">Affiliations</label>
+        <input type="text" id="affiliations" formControlName="affiliations">
+      </div>
+      <div class="form-group">
+        <label for="keywords">Keywords</label>
+        <input type="text" id="keywords" formControlName="keywords" required>
+      </div>
+      <div class="form-group">
+        <label for="publicationDate">Publication Date</label>
+        <input type="date" id="publicationDate" formControlName="publicationDate" required>
+      </div>
+      <div class="form-group">
+        <label for="abstractText">Abstract Text</label>
+        <textarea id="abstractText" formControlName="abstractText" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="doi">DOI</label>
+        <input type="text" id="doi" formControlName="doi">
+      </div>
+      <div class="modal-actions">
+        <button type="submit" class="btn-submit" [disabled]="fileForm.invalid">
+          {{ selectedFile ? 'Update File' : 'Create File' }}
+        </button>
+        <button type="button" class="btn-cancel" (click)="closeFileModal()">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>

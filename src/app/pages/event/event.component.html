@@ -7,7 +7,7 @@
     <nav class="navbar">
       <div class="nav-container">
         <a href="#" class="logo">
-          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSI1NCIgeT0iMTUiIHdpZHRoPSI0IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjxyZWN0IHg9IjU0IiB5PSIzNyIgd2lkdGg9IjQiIGhlaWdodD0iOCIgZmlsbD0iIzAwMCIvPg0KPHRleHQgeD0iNzAiIHk9IjQyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMzMzIj5saW10aWM8L3RleHQ+DQo8L2c+DQo8L3N2Zz4=" 
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjAwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPg0KPGcgaWQ9IkxpbXRpYyI+DQo8cmVjdCB4PSIxNSIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjI2IiB5PSIxNSIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iMTUiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSIzNyIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiM5QUZGMDAiLz4NCjxyZWN0IHg9IjM3IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzlBRkYwMCIvPg0KPHJlY3QgeD0iNDgiIHk9IjI2IiB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjOUFGRjAwIi8+DQo8cmVjdCB4PSI1NCIgeT0iMTUiIHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiMwMDAiLz4NCjxyZWN0IHg9IjU0IiB5PSIzNyIgd2lkdGg9IjgiIGhlaWdodD0iOCIgZmlsbD0iIzAwMCIvPg0KPHRleHQgeD0iNzAiIHk9IjQyIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMzAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMzMzIj5saW10aWM8L3RleHQ+DQo8L2c+DQo8L3N2Zz4=" 
             alt="LIMTIC" style="height: 40px; width: auto;">
         </a>
         <ul class="nav-menu">
@@ -55,20 +55,14 @@
             <option value="COMPLETED">Completed</option>
           </select>
         </div>
-        <div class="filter-group" *ngIf="isAdmin">
-          <label>&nbsp;</label>
-          <div class="add-event-container">
-            <button class="btn-add" (click)="openModal()">+ Add Event</button>
-          </div>
-        </div>
       </div>
     </div>
-
+    <div class="add-event-container">
+      <button class="btn-add btn-add-large" (click)="openModal()">+ Add Event</button>
+    </div>
     <div class="error-state" *ngIf="errorMessage">{{ errorMessage }}</div>
-
     <div class="events-container" id="eventsContainer">
       <div *ngIf="loading" class="loading-state">Loading events...</div>
-
       <div class="event-card" *ngFor="let event of filteredEvents">
         <div 
           class="event-status" 
@@ -79,18 +73,14 @@
           }">
           {{ event.status | titlecase }} 
         </div>
-        
         <img *ngIf="event.image" [src]="event.image" alt="{{ event.eventName }}" />
         <img *ngIf="!event.image" src="/event-test.webp" alt="{{ event.eventName }}" />
-        
         <div class="event-date">
           📅 {{ event.startDate | date:'mediumDate' }} - {{ event.endDate | date:'mediumDate' }}
         </div>
-        
         <div class="event-content">
           <div class="event-title">{{ event.eventName }}</div>
           <div class="event-description">{{ event.description }}</div>
-          
           <div class="event-meta">
             <div class="event-meta-item">
               <span>🏛️</span>
@@ -105,7 +95,6 @@
               <span>{{ event.budget | currency }}</span>
             </div>
           </div>
-          
           <div class="event-actions">
             <ng-container [ngSwitch]="event.status">
               <ng-container *ngSwitchCase="'UPCOMING'">
@@ -134,7 +123,6 @@
                 </button>
               </ng-container>
             </ng-container>
-            
             <button 
               class="btn-info" 
               (click)="eventAction('Details', event.id!)"
@@ -158,7 +146,6 @@
           </div>
         </div>
       </div>
-      
       <div *ngIf="!loading && !errorMessage && filteredEvents.length === 0" class="no-events-found">
         No events found matching your criteria.
       </div>
@@ -174,9 +161,8 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h2>{{ editEvent ? 'Edit Event' : 'Create New Event' }}</h2>
-      <button class="close-btn" (click)="closeModal()">&times;</button>
+      <button class="close" (click)="closeModal()">&times;</button>
     </div>
-
     <form (ngSubmit)="onSubmit()" #eventForm="ngForm" class="modal-body">
       <div class="form-group">
         <label for="eventTitle">Event Title</label>
@@ -194,7 +180,6 @@
           Event title is required
         </div>
       </div>
-
       <div class="form-group">
         <label for="eventDescription">Description</label>
         <textarea
@@ -210,7 +195,6 @@
           Description is required
         </div>
       </div>
-
       <div class="form-row">
         <div class="form-group">
           <label for="eventLocation">Location</label>
@@ -246,7 +230,6 @@
           </div>
         </div>
       </div>
-
       <div class="form-row">
         <div class="form-group">
           <label for="eventStartDate">Start Date</label>
@@ -279,7 +262,6 @@
           </div>
         </div>
       </div>
-
       <div class="form-group">
         <label for="eventBudget">Budget</label>
         <input
@@ -297,7 +279,6 @@
           Budget is required and must be a positive number
         </div>
       </div>
-
       <div class="form-group">
         <label for="eventStatus">Status</label>
         <select
@@ -316,11 +297,10 @@
           Status is required
         </div>
       </div>
-
       <div class="modal-actions">
         <button
           type="submit"
-          class="btn-save"
+          class="btn-submit"
           [disabled]="!eventForm.valid"
         >
           {{ editEvent ? 'Update Event' : 'Create Event' }}

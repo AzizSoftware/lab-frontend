@@ -16,6 +16,7 @@ export interface Event {
   image?: string;
   imagePath?: string;
   enrolledUsers?: string[];
+  createdAt?: string;
 }
 
 @Injectable({

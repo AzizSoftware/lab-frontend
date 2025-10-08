@@ -19,31 +19,30 @@ export class FileComponent implements OnInit {
   loading = true;
   errorMessage = '';
 
-  searchTitle: string = '';
   searchKeyword: string = '';
+  selectedFileType: string = '';
   searchAuthor: string = '';
-  searchDateAfter: string = '';
-  searchDateBefore: string = '';
+  searchRanking: string = '';
 
   isModalOpen: boolean = false;
   selectedFile: File | null = null;
   affiliationsInput: string = '';
-  authorsInput: string = ''; // Added for comma-separated authors input
-  keywordsInput: string = ''; // Added for comma-separated keywords input
+  authorsInput: string = '';
+  keywordsInput: string = '';
   fileTypeOptions: string[] = [];
-  selectedFileType: string = '';
   customFileType: string = '';
 
   newFile: Partial<FileDocument> = {
     id: '',
     title: '',
-    authors: [], // Initialize as empty array
+    authors: [],
     affiliations: [],
-    keywords: [], // Initialize as empty array
+    keywords: [],
     publicationDate: new Date().toISOString().split('T')[0],
     abstractText: '',
     doi: '',
-    fileType: ''
+    fileType: '',
+    ranking: '' // Added for classification
   };
 
   constructor(
@@ -98,51 +97,44 @@ export class FileComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
-    const searchByTitle$ = this.searchTitle
-      ? this.fileService.findByTitle(this.searchTitle)
-      : of(this.files);
-
     const searchByKeyword$ = this.searchKeyword
       ? this.fileService.findByKeyword(this.searchKeyword)
+      : of(this.files);
+
+    const searchByType$ = this.selectedFileType
+      ? this.fileService.findByType(this.selectedFileType)
       : of(this.files);
 
     const searchByAuthor$ = this.searchAuthor
       ? this.fileService.findByAuthor(this.searchAuthor)
       : of(this.files);
 
-    const searchByDateAfter$ = this.searchDateAfter
-      ? this.fileService.findByDateAfter(this.searchDateAfter)
+    const searchByRank$ = this.searchRanking
+      ? this.fileService.findByRank(this.searchRanking)
       : of(this.files);
 
-    const searchByDateBefore$ = this.searchDateBefore
-      ? this.fileService.findByDateBefore(this.searchDateBefore)
-      : of(this.files);
-
-    forkJoin([searchByTitle$, searchByKeyword$, searchByAuthor$, searchByDateAfter$, searchByDateBefore$])
+    forkJoin([searchByKeyword$, searchByType$, searchByAuthor$, searchByRank$])
       .pipe(
         catchError(err => {
           this.errorMessage = 'Search failed.';
           this.loading = false;
-          return of([[], [], [], [], []]);
+          return of([[], [], [], []]);
         })
       )
-      .subscribe(([titleFiles, keywordFiles, authorFiles, dateAfterFiles, dateBeforeFiles]) => {
+      .subscribe(([keywordFiles, typeFiles, authorFiles, rankFiles]) => {
         let finalFiles = this.files;
 
-        if (this.searchTitle) {
-          finalFiles = finalFiles.filter(file => titleFiles.some(f => f.id === file.id));
-        }
         if (this.searchKeyword) {
           finalFiles = finalFiles.filter(file => keywordFiles.some(f => f.id === file.id));
+        }
+        if (this.selectedFileType) {
+          finalFiles = finalFiles.filter(file => typeFiles.some(f => f.id === file.id));
         }
         if (this.searchAuthor) {
           finalFiles = finalFiles.filter(file => authorFiles.some(f => f.id === file.id));
         }
-        if (this.searchDateAfter) {
-          finalFiles = finalFiles.filter(file => dateAfterFiles.some(f => f.id === file.id));
-        }
-        if (this.searchDateBefore) {
-          finalFiles = finalFiles.filter(file => dateBeforeFiles.some(f => f.id === file.id));
+        if (this.searchRanking) {
+          finalFiles = finalFiles.filter(file => rankFiles.some(f => f.id === file.id));
         }
 
         this.filteredFiles = finalFiles;
@@ -155,7 +147,7 @@ export class FileComponent implements OnInit {
         }
       });
 
-    if (!this.searchTitle && !this.searchKeyword && !this.searchAuthor && !this.searchDateAfter && !this.searchDateBefore) {
+    if (!this.searchKeyword && !this.selectedFileType && !this.searchAuthor && !this.searchRanking) {
       this.filteredFiles = this.files;
       this.errorMessage = '';
       this.loading = false;
@@ -174,8 +166,8 @@ export class FileComponent implements OnInit {
     this.isModalOpen = false;
     this.selectedFile = null;
     this.affiliationsInput = '';
-    this.authorsInput = ''; // Reset authors input
-    this.keywordsInput = ''; // Reset keywords input
+    this.authorsInput = '';
+    this.keywordsInput = '';
     this.selectedFileType = '';
     this.customFileType = '';
     this.newFile = {
@@ -187,7 +179,8 @@ export class FileComponent implements OnInit {
       publicationDate: new Date().toISOString().split('T')[0],
       abstractText: '',
       doi: '',
-      fileType: ''
+      fileType: '',
+      ranking: '' // Reset classification
     };
   }
 
@@ -235,7 +228,8 @@ export class FileComponent implements OnInit {
       publicationDate: this.newFile.publicationDate,
       abstractText: this.newFile.abstractText,
       doi: this.newFile.doi,
-      fileType: fileType
+      fileType: fileType,
+      ranking: this.newFile.ranking // Include classification
     };
 
     this.fileService.uploadFile(user.email, this.selectedFile, fileToSubmit).subscribe({
@@ -272,11 +266,17 @@ export class FileComponent implements OnInit {
         next: (file) => {
           console.log('FileDocument:', file);
           if (!file.filename) {
-            this.errorMessage = 'File name is missing. Cannot download.';
-            console.error('FileDocument missing filename:', file);
-            return;
+            // Fallback: Generate filename from title and fileType
+            if (file.title && file.fileType) {
+              file.filename = `${file.title.replace(/[^a-zA-Z0-9]/g, '_')}.${file.fileType.toLowerCase()}`;
+              console.warn('Generated fallback filename:', file.filename);
+            } else {
+              this.errorMessage = 'File name and type are missing. Cannot download.';
+              console.error('FileDocument missing filename and title/fileType:', file);
+              return;
+            }
           }
-          const url = this.userService.getFileUrl(file.filename);
+          const url = this.userService.getFileUrl(file.filename!);
           this.userService.downloadFile(url).subscribe({
             next: (blob) => {
               const downloadUrl = window.URL.createObjectURL(blob);
@@ -311,8 +311,6 @@ export class FileComponent implements OnInit {
           }
         }
       });
-    } else if (action === 'Details' && id) {
-      console.log(`Details requested for File ID: ${id}`);
     }
   }
 }

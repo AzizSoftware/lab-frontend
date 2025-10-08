@@ -321,6 +321,105 @@
             line-height: 1.6;
         }
 
+
+
+
+        /* Team Section */
+        .team {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+            margin: 2rem;
+        }
+
+        .team-pyramid {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .team-layer {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .head-layer .team-member {
+            background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+            color: #0f172a;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(34, 197, 94, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .head-layer .member-name,
+        .head-layer .member-role {
+            color: #ffffff;
+        }
+
+        .professor-layer {
+            max-width: 900px;
+        }
+
+        .maitre-layer {
+            max-width: 1200px;
+        }
+
+        .team-member {
+            text-align: center;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(34, 197, 94, 0.1);
+            min-width: 200px;
+        }
+
+        .team-member:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .member-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .member-role {
+            font-size: 0.95rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+
+
+
+
         /* Files Section */
         .files-section {
             padding: 80px 0;

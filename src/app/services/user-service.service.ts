@@ -137,6 +137,14 @@ export class UserService {
     });
   }
 
+  getProfilePhoto(email: string): Observable<Blob> {
+    return this.http.get(`${this.baseUrl}/${email}/profile-photo`, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    }); // <--- This correctly asks the backend for the blob
+  }
+
+
   downloadFile(url: string): Observable<Blob> {
     return this.http.get(url, {
       headers: this.getAuthHeaders(),

@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 import { HomeComponent } from './pages/home/home.component';
 import { EventComponent } from './pages/event/event.component';
 import { ProjectComponent } from './pages/project/project.component';
-import { ProfileComponent } from './profile/profile.component';
+import { ProfileComponent } from './pages/profile/profile.component';
 import { provideHttpClient } from '@angular/common/http'; 
 import { RouterModule } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
@@ -15,6 +15,14 @@ import { SignupComponent } from './pages/signup/signup.component';
 import { FileComponent } from './pages/file/file.component';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { AdminConsoleComponent } from './pages/admin/admin-console/admin-console.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,8 +32,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     ProfileComponent,
     LoginComponent,
     SignupComponent,
-    FileComponent
-   
+    FileComponent,
+    AdminConsoleComponent
   ],
   imports: [
     BrowserModule,
@@ -33,8 +41,13 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     CommonModule,
     FormsModule,
     MatSnackBarModule,
-    ReactiveFormsModule, // ✅ should be here
-    RouterModule.forRoot([]) // router enabled
+    ReactiveFormsModule, 
+    BrowserAnimationsModule, // Required for Angular Material
+    MatTableModule, // For mat-table and dataSource
+    MatTabsModule, // For mat-tab-group and mat-tab
+    MatIconModule, // For mat-icon
+    MatButtonModule,
+    RouterModule.forRoot([]) 
   ],
   providers: [
     provideHttpClient(),

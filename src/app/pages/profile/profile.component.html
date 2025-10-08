@@ -39,8 +39,8 @@
       <div class="page-header">
         <div class="profile-info">
           <div class="profile-photo-container">
-            <img *ngIf="user.imageUrl" [src]="user.imageUrl" alt="Profile Photo" class="profile-photo">
-            <div *ngIf="!user.imageUrl" class="profile-photo-placeholder">No Photo</div>
+            <img *ngIf="profileImageUrl" [src]="profileImageUrl" alt="Profile Photo" class="profile-photo">
+            <div *ngIf="!profileImageUrl" class="profile-photo-placeholder">No Photo</div>
           </div>
           <h1>{{ formatUserName(user) }}</h1>
           <p>{{ user.email }}</p>

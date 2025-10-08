@@ -3,10 +3,10 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, finalize } from 'rxjs/operators';
-import {  User, FileDocument, Project, Event } from '../services/models';
-import { FileService } from '../services/file-service.service';
-import { UserService } from '../services/user-service.service';
-
+import {  User, FileDocument, Project, Event } from '../../services/models';
+import { FileService } from '../../services/file-service.service';
+import { UserService } from '../../services/user-service.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
@@ -30,7 +30,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   showPhotoUpload = false;
   isLoading = false;
   isUploading = false;
-  
+  profileImageUrl: SafeUrl | null = null; // Declare property
   // Forms
   profileForm!: FormGroup;
   uploadForm!: FormGroup;
@@ -47,6 +47,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private fileService: FileService,
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
+    private sanitizer: DomSanitizer, // Declare sanitizer,
     private router: Router
   ) {
     this.initializeForms();
@@ -141,6 +142,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.user = user;
           this.populateProfileForm();
           this.loadEnrolledData(email);
+          this.loadProfileImage(email); 
         },
         error: (error) => {
           console.error('Error loading user profile:', error);
@@ -251,7 +253,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  private uploadPhoto(): void {
+   private uploadPhoto(): void {
     if (this.selectedPhotoFile && this.user) {
       this.isLoading = true;
       
@@ -268,6 +270,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
           next: (updatedUser) => {
             this.user = updatedUser;
             this.showSuccessMessage('Profile photo updated successfully!');
+            // FIX B: Reload the image immediately after successful upload
+            this.loadProfileImage(updatedUser.email); 
           },
           error: (error) => {
             console.error('Error uploading photo:', error);
@@ -275,6 +279,22 @@ export class ProfileComponent implements OnInit, OnDestroy {
           }
         });
     }
+  }
+
+
+  //image uplaod 
+  private loadProfileImage(email: string): void {
+    this.userService.getProfilePhoto(email).subscribe({
+      next: (blob) => {
+        const objectUrl = URL.createObjectURL(blob);
+        this.profileImageUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+      },
+
+      error: (error) => {
+        console.error('Error loading profile image:', error);
+        this.profileImageUrl = null; // Fallback to placeholder in template
+      }
+    });
   }
 
   // Document Upload Methods
@@ -444,4 +464,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     console.error('Error:', message);
     // Example: this.notificationService.showError(message);
   }
+
+
+  
 }
